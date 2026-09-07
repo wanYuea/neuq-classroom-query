@@ -1,0 +1,9 @@
+name: probe
+on:
+  workflow_dispatch:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: curl workers.dev probe
+        run: curl -sS -m 60 https://neuqprobemtr0oeou.workers.dev/probe-neuq
