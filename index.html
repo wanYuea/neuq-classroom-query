@@ -1,0 +1,390 @@
+<!doctypehtml><html lang=zh-CN><meta charset=UTF-8 lang=zh-CN><meta content=width=device-width,initial-scale=1.0 name=viewport><meta content="telephone=no, email=no, address=no"name=format-detection><title>东秦空闲教室总表</title><script>// 检查系统偏好并为 <html> 标签添加 'dark' 类
+        (function () {
+            try {
+                var mql = window.matchMedia('(prefers-color-scheme: dark)');
+                if (mql.matches) {
+                    document.documentElement.classList.add('dark');
+                }
+                mql.addEventListener('change', function (e) {
+                    if (e.matches) {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                });
+            } catch (e) { }
+        })();</script><link href=/assets/favicon.svg rel=icon type=image/svg+xml><link href=/assets/styles/main.css rel=stylesheet><link href=/assets/styles/font.css rel=stylesheet><style id=theme-style></style><body><div class=top-banner><span>🛠️ 新分支将在 <a href=https://neuq-rs.tsiao.io/>Rust 实验室</a> 陆续测试新增功能，敬请期待！</span><button aria-label=关闭 class=top-banner-close onclick=this.parentElement.style.display='none'>×</button></div><div class=top-banner><span>🎉 现已支持自定义主题配置！滚动到页面底部查看更多细节。</span><button aria-label=关闭 class=top-banner-close onclick=this.parentElement.style.display='none'>×</button></div><h1><span id=current-date-placeholder>2026/09/07</span><svg style="display: inline-block; vertical-align: -0.5em;"class=loading-badge height=1.75em width=2.2em><use href=#icon-neuq-emblem-core></use></svg>空闲教室总表</h1><p class="info-text update-time-text"><span>本表更新于 <span id=update-time-placeholder>2026/09/07 16:22</span></span> <span class="status-badge badge-updated">ALL UPDATED</span><div class=date-switcher><button class=date-switcher-btn disabled id=prev-day-btn onclick=changeDay(-1)><svg height=24 width=24><use href=#icon-chevron-double-left></use></svg></button><div class=date-display id=date-display>今天 (MM/DD)</div><button class=date-switcher-btn id=next-day-btn onclick=changeDay(1)><svg height=24 width=24><use href=#icon-chevron-double-right></use></svg></button></div><div class=emergency-info><p lang=zh>宠辱不惊，闲看庭前花开花落；去留无意，漫随天外云卷云舒。</div><div id=days-wrapper><div class="day-content active"id=day-0-content><div class=tab-container><div class=tab-buttons><button class="tab-button active"onclick="openTab(event, 'day-0-gongxueguan')">工学馆</button><button onclick="openTab(event, 'day-0-benbuqita')"class=tab-button>本部其它</button><button onclick="openTab(event, 'day-0-nanxiaoqu')"class=tab-button>南校区</button></div><div class="tab-content active"id=day-0-gongxueguan><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>上午第1-2节</h3><table border=1 class=gxg-table><tbody><tr><td>1F<td id=day-0-GXG1F1-2>103 104 112 116 <del>122</del> <strong>126</strong> 127 129<tr><td>2F<td id=day-0-GXG2F1-2><del>203</del> <del>204</del> <del>206</del> <del>215</del> 216 220 221 <del>225</del> <del>226</del> <del>229</del> 230 <del>231</del><tr><td>3F<td id=day-0-GXG3F1-2><del>303</del> <del>304</del> <del>307</del> <strong>315</strong> 316 <del>320</del> 321 325 329 <del>330</del> 331<tr><td>4F<td id=day-0-GXG4F1-2><del>403</del> <del>406</del> <del>407</del> <del>411</del> <del>414</del> <del>421</del> <del>425</del><tr><td>5F<td id=day-0-GXG5F1-2>510 514 <del>517</del><tr><td>6F<td id=day-0-GXG6F1-2><del>603</del> <del>607</del> <del>610</del> <del>614</del> <del>617</del> 625<tr><td>7F<td id=day-0-GXG7F1-2>703 706 <strong>707</strong> 710 711 714 717 725</table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>上午第3-4节</h3><table border=1 class=gxg-table><tbody><tr><td>1F<td id=day-0-GXG1F3-4><del>103</del> <del>104</del> <del>112</del> <del><u>115</u></del> <del>116</del> <strong>126</strong> 127 <del>129</del><tr><td>2F<td id=day-0-GXG2F3-4><del><u>211</u></del> <del>216</del> 220 <del>221</del> 230<tr><td>3F<td id=day-0-GXG3F3-4><u>311</u> <del><u>312</u></del> <strong>315</strong> 316 <del>321</del> <del>325</del> <del>329</del> 331<tr><td>4F<td id=day-0-GXG4F3-4>无<tr><td>5F<td id=day-0-GXG5F3-4><u>506</u> <u>507</u> <del>510</del> 514 <del><u>525</u></del><tr><td>6F<td id=day-0-GXG6F3-4><u>606</u> <u>611</u> <u>621</u> 625<tr><td>7F<td id=day-0-GXG7F3-4><del>703</del> 706 <strong>707</strong> 710 711 714 717 725</table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>下午第5-6节</h3><table border=1 class=gxg-table><tbody><tr><td>1F<td id=day-0-GXG1F5-6><del><u>107</u></del> <del><u>111</u></del> <strong>126</strong> <del>127</del><tr><td>2F<td id=day-0-GXG2F5-6><del><u>203</u></del> <del><u>207</u></del> <del><u>215</u></del> <del>220</del> <del><u>226</u></del> <del><u>229</u></del> <del>230</del> <u>231</u><tr><td>3F<td id=day-0-GXG3F5-6><del><u>303</u></del> <del><u>307</u></del> 311 <strong>315</strong> 316 <u>320</u> <u>326</u> <del>331</del><tr><td>4F<td id=day-0-GXG4F5-6><u>411</u> <u>414</u> <u>421</u> <u>425</u><tr><td>5F<td id=day-0-GXG5F5-6><u>503</u> <del>506</del> 507 <del>514</del> <u>521</u><tr><td>6F<td id=day-0-GXG6F5-6><u>603</u> 606 <u>607</u> <u>610</u> 611 <u>614</u> <u>617</u> 621 625<tr><td>7F<td id=day-0-GXG7F5-6>706 <strong>707</strong> 710 711 714 717 725</table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>下午第7-8节</h3><table border=1 class=gxg-table><tbody><tr><td>1F<td id=day-0-GXG1F7-8><u>103</u> <u>106</u> <u>115</u> <del><u>119</u></del> <u>122</u> <strong>126</strong><tr><td>2F<td id=day-0-GXG2F7-8><del><u>204</u></del> <u>211</u> <u>216</u> <u>221</u> 231<tr><td>3F<td id=day-0-GXG3F7-8><u>304</u> <del><u>306</u></del> 311 <u>312</u> <strong>315</strong> <del>316</del> <del>320</del> <u>321</u> 326 <u>329</u> <u>330</u><tr><td>4F<td id=day-0-GXG4F7-8><u>403</u> <u>406</u> 411 414 421 425<tr><td>5F<td id=day-0-GXG5F7-8>503 507 <u>511</u> <del><u>517</u></del> 521 <del><u>525</u></del><tr><td>6F<td id=day-0-GXG6F7-8>603 <del>606</del> <del>607</del> 610 611 <del>614</del> <del>617</del> <del>621</del> <del>625</del><tr><td>7F<td id=day-0-GXG7F7-8><del>706</del> <strong>707</strong> <del>710</del> <del>711</del> <del>714</del> <del>717</del> <del>725</del></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>晚上第9-10节</h3><table border=1 class=gxg-table><tbody><tr><td>1F<td id=day-0-GXG1F9-10>103 <del><u>104</u></del> 106 <u>111</u> <u>112</u> 115 <u>116</u> 122 <strong>126</strong><tr><td>2F<td id=day-0-GXG2F9-10><u>206</u> 211 <u>212</u> <u>215</u> 216 <u>220</u> 221 <u>225</u> <u>229</u> 231<tr><td>3F<td id=day-0-GXG3F9-10><u>303</u> 304 <u>307</u> 311 312 <strong>315</strong> 321 <u>325</u> 326 329 330 <u>331</u><tr><td>4F<td id=day-0-GXG4F9-10>403 406 <u>407</u> 411 414 421 425<tr><td>5F<td id=day-0-GXG5F9-10>503 <u>506</u> 507 <u>510</u> 511 <del><u>514</u></del> 521<tr><td>6F<td id=day-0-GXG6F9-10>603 610 611<tr><td>7F<td id=day-0-GXG7F9-10><u>703</u> <strong>707</strong></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>晚上第11-12节</h3><table border=1 class=gxg-table><tbody><tr><td>1F<td id=day-0-GXG1F11-12>103 106 111 112 115 116 122 <strong>126</strong> <u>127</u> <u>129</u><tr><td>2F<td id=day-0-GXG2F11-12><u>203</u> <u>204</u> 206 <u>207</u> 211 212 215 216 220 221 225 229 <u>230</u> 231<tr><td>3F<td id=day-0-GXG3F11-12>303 304 307 311 312 <strong>315</strong> <u>316</u> <u>320</u> 321 325 326 329 330 331<tr><td>4F<td id=day-0-GXG4F11-12>403 406 407 411 414 421 425<tr><td>5F<td id=day-0-GXG5F11-12>503 506 507 510 511 521<tr><td>6F<td id=day-0-GXG6F11-12>603 610 611 <u>621</u><tr><td>7F<td id=day-0-GXG7F11-12>703 <strong>707</strong> <u>710</u></table></div><div class=tab-content id=day-0-benbuqita><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>上午第1-2节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>基础楼<td>综合实验楼<td>地质楼<td>管理楼<tr class=classroom-row><td id=day-0-JCL1-2><strong>217</strong><br><strong>308</strong><td id=day-0-ZHSYL1-2><strong>708</strong><br><strong>1201</strong><td id=day-0-DZL1-2>无<td id=day-0-GLL1-2><del>3110</del><br>3210</table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>上午第3-4节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>基础楼<td>综合实验楼<td>地质楼<td>管理楼<tr class=classroom-row><td id=day-0-JCL3-4><strong>217</strong><br><strong>308</strong><td id=day-0-ZHSYL3-4><strong>708</strong><br><strong>1201</strong><td id=day-0-DZL3-4>无<td id=day-0-GLL3-4><del>3210</del></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>下午第5-6节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>基础楼<td>综合实验楼<td>地质楼<td>管理楼<tr class=classroom-row><td id=day-0-JCL5-6><strong>217</strong><br><strong>308</strong><td id=day-0-ZHSYL5-6><strong>708</strong><br><strong>1201</strong><td id=day-0-DZL5-6>无<td id=day-0-GLL5-6><u>3110</u></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>下午第7-8节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>基础楼<td>综合实验楼<td>地质楼<td>管理楼<tr class=classroom-row><td id=day-0-JCL7-8><strong>217</strong><br><strong>308</strong><td id=day-0-ZHSYL7-8><strong>708</strong><br><strong>1201</strong><td id=day-0-DZL7-8>无<td id=day-0-GLL7-8><del>3110</del><br><u>3210</u></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>晚上第9-10节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>基础楼<td>综合实验楼<td>地质楼<td>管理楼<tr class=classroom-row><td id=day-0-JCL9-10><strong>217</strong><br><strong>308</strong><td id=day-0-ZHSYL9-10><strong>708</strong><br><strong>1201</strong><td id=day-0-DZL9-10>无<td id=day-0-GLL9-10>3210</table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>晚上第11-12节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>基础楼<td>综合实验楼<td>地质楼<td>管理楼<tr class=classroom-row><td id=day-0-JCL11-12><strong>217</strong><br><strong>308</strong><td id=day-0-ZHSYL11-12><strong>708</strong><br><strong>1201</strong><td id=day-0-DZL11-12>无<td id=day-0-GLL11-12><u>3110</u><br>3210</table></div><div class=tab-content id=day-0-nanxiaoqu><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>上午第1-2节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>科技楼<td>人文楼<tr class=classroom-row><td style="font-size: 13px"id=day-0-KJL1-2><strong>2011</strong> <strong>2037</strong> 2060 <strong>2066</strong> 2080 <strong>3051</strong> 4002 <strong>4005</strong> <strong>4031</strong> <strong>4042</strong> 5002 <strong>5066</strong> 6054 <strong>6062</strong><br><strong>6001-1A自习室C</strong><br><strong>6001-A自习室A</strong><br><strong>6003自习室D</strong><br><strong>6004自习室B</strong><br><del>6009-1A自习室I</del><br><strong>6009自习室G</strong><br>6010-1A自习室F<br>6010自习室E<br><strong>6011自习室K</strong><br><del>6014-1A自习室J</del><br><strong>6014自习室H</strong><br>6017自习室R<br><strong>6019自习室T</strong><br><strong>6022-1A自习室N</strong><br><del>6022-A自习室M</del><br><del>6026-A自习室Q</del><br><del>6026自习室P</del><br><strong>6028自习室S</strong><td style="font-size: 13px"id=day-0-RWL1-2><del>205</del> <strong>209</strong> <del>220</del> <del>229</del> <strong>308</strong> 401 405 <strong>518</strong> <strong>620</strong> <strong>637</strong> <strong>701</strong> 710 <strong>728</strong></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>上午第3-4节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>科技楼<td>人文楼<tr class=classroom-row><td style="font-size: 13px"id=day-0-KJL3-4><u>1062</u> <strong>2011</strong> <strong>2037</strong> <del>2060</del> <strong>2066</strong> <del>2080</del> <strong>3051</strong> 4002 <strong>4005</strong> <strong>4031</strong> <strong>4042</strong> 5002 <strong>5066</strong> 6054 <strong>6062</strong><br><strong>6001-1A自习室C</strong><br><strong>6001-A自习室A</strong><br><strong>6003自习室D</strong><br><strong>6004自习室B</strong><br><strong>6009自习室G</strong><br><del>6010-1A自习室F</del><br><del>6010自习室E</del><br><strong>6011自习室K</strong><br><strong>6014自习室H</strong><br><u>6016自习室L</u><br>6017自习室R<br><strong>6019自习室T</strong><br><strong>6022-1A自习室N</strong><br><strong>6028自习室S</strong><td style="font-size: 13px"id=day-0-RWL3-4><strong>209</strong> <strong>308</strong> <u>328</u> 401 405 <strong>518</strong> <strong>620</strong> <strong>637</strong> <strong>701</strong> <del>710</del> <strong>728</strong></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>下午第5-6节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>科技楼<td>人文楼<tr class=classroom-row><td style="font-size: 13px"id=day-0-KJL5-6><del>1062</del> <u>1076</u> <strong>2011</strong> <strong>2037</strong> <strong>2066</strong> <strong>3051</strong> <u>3067</u> 4002 <strong>4005</strong> <strong>4031</strong> <strong>4042</strong> 5002 <strong>5066</strong> <u>5068</u> <del>6054</del> <strong>6062</strong><br><strong>6001-1A自习室C</strong><br><strong>6001-A自习室A</strong><br><strong>6003自习室D</strong><br><strong>6004自习室B</strong><br><del><u>6009-1A自习室I</u></del><br><strong>6009自习室G</strong><br><strong>6011自习室K</strong><br><del><u>6014-1A自习室J</u></del><br><strong>6014自习室H</strong><br><del>6016自习室L</del><br>6017自习室R<br><strong>6019自习室T</strong><br><strong>6022-1A自习室N</strong><br><del><u>6022-A自习室M</u></del><br><u>6024自习室O</u><br><u>6026-A自习室Q</u><br><u>6026自习室P</u><br><strong>6028自习室S</strong><td style="font-size: 13px"id=day-0-RWL5-6><del><u>201</u></del> <strong>209</strong> <u>220</u> <u>229</u> <strong>308</strong> 328 401 405 <u>510</u> <strong>518</strong> <strong>620</strong> <strong>637</strong> <strong>701</strong> <strong>728</strong></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>下午第7-8节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>科技楼<td>人文楼<tr class=classroom-row><td style="font-size: 13px"id=day-0-KJL7-8>1076 <strong>2011</strong> <strong>2037</strong> <strong>2066</strong> <strong>3051</strong> 3067 <del>4002</del> <strong>4005</strong> <strong>4031</strong> <strong>4042</strong> <del>5002</del> <strong>5066</strong> <del>5068</del> <strong>6062</strong><br><strong>6001-1A自习室C</strong><br><strong>6001-A自习室A</strong><br><strong>6003自习室D</strong><br><strong>6004自习室B</strong><br><strong>6009自习室G</strong><br><u>6010-1A自习室F</u><br><u>6010自习室E</u><br><strong>6011自习室K</strong><br><strong>6014自习室H</strong><br><del>6017自习室R</del><br><strong>6019自习室T</strong><br><strong>6022-1A自习室N</strong><br><del>6024自习室O</del><br>6026-A自习室Q<br>6026自习室P<br><strong>6028自习室S</strong><td style="font-size: 13px"id=day-0-RWL7-8><strong>209</strong> <del>220</del> <del>229</del> <strong>308</strong> <del>328</del> <del>401</del> <del>405</del> 510 <strong>518</strong> <strong>620</strong> <strong>637</strong> <strong>701</strong> <strong>728</strong></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>晚上第9-10节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>科技楼<td>人文楼<tr class=classroom-row><td style="font-size: 13px"id=day-0-KJL9-10>1076 <strong>2011</strong> <strong>2037</strong> <u>2060</u> <strong>2066</strong> <u>2080</u> <strong>3051</strong> 3067 <strong>4005</strong> <strong>4031</strong> <strong>4042</strong> <strong>5066</strong> <u>6054</u> <u>6058</u> <strong>6062</strong><br><strong>6001-1A自习室C</strong><br><strong>6001-A自习室A</strong><br><strong>6003自习室D</strong><br><strong>6004自习室B</strong><br><strong>6009自习室G</strong><br>6010-1A自习室F<br>6010自习室E<br><strong>6011自习室K</strong><br><u>6014-1A自习室J</u><br><strong>6014自习室H</strong><br><strong>6019自习室T</strong><br><strong>6022-1A自习室N</strong><br>6026-A自习室Q<br>6026自习室P<br><strong>6028自习室S</strong><td style="font-size: 13px"id=day-0-RWL9-10><u>201</u> <strong>209</strong> <strong>308</strong> 510 <strong>518</strong> <strong>620</strong> <strong>637</strong> <strong>701</strong> <u>710</u> <strong>728</strong></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>晚上第11-12节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>科技楼<td>人文楼<tr class=classroom-row><td style="font-size: 13px"id=day-0-KJL11-12><u>1062</u> 1076 <strong>2011</strong> <strong>2037</strong> 2060 <strong>2066</strong> 2080 <strong>3051</strong> 3067 <strong>4005</strong> <strong>4031</strong> <strong>4042</strong> <strong>5066</strong> 6054 6058 <strong>6062</strong><br><strong>6001-1A自习室C</strong><br><strong>6001-A自习室A</strong><br><strong>6003自习室D</strong><br><strong>6004自习室B</strong><br><strong>6009自习室G</strong><br>6010-1A自习室F<br>6010自习室E<br><strong>6011自习室K</strong><br>6014-1A自习室J<br><strong>6014自习室H</strong><br><strong>6019自习室T</strong><br><strong>6022-1A自习室N</strong><br>6026-A自习室Q<br>6026自习室P<br><strong>6028自习室S</strong><td style="font-size: 13px"id=day-0-RWL11-12>201 <u>208</u> <strong>209</strong> <strong>308</strong> 510 <strong>518</strong> <strong>620</strong> <strong>637</strong> <strong>701</strong> 710 <strong>728</strong></table></div></div></div><div class=day-content id=day-1-content><div class=tab-container><div class=tab-buttons><button class="tab-button active"onclick="openTab(event, 'day-1-gongxueguan')">工学馆</button><button onclick="openTab(event, 'day-1-benbuqita')"class=tab-button>本部其它</button><button onclick="openTab(event, 'day-1-nanxiaoqu')"class=tab-button>南校区</button></div><div class="tab-content active"id=day-1-gongxueguan><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>上午第1-2节</h3><table border=1 class=gxg-table><tbody><tr><td>1F<td id=day-1-GXG1F1-2>103 <del>104</del> <del>107</del> <strong>119</strong> 127 <del>129</del><tr><td>2F<td id=day-1-GXG2F1-2>203 <del>204</del> <del>206</del> <del>207</del> <del>211</del> <strong>215</strong> <strong>216</strong> <del>221</del> <del>225</del> 231<tr><td>3F<td id=day-1-GXG3F1-2>303 <del>304</del> <del>307</del> <del>311</del> <del>331</del><tr><td>4F<td id=day-1-GXG4F1-2><del>406</del> <strong>407</strong> 411 <strong>414</strong> 421<tr><td>5F<td id=day-1-GXG5F1-2>510 <del>511</del> <strong>521</strong> <del>525</del><tr><td>6F<td id=day-1-GXG6F1-2><del>603</del> <del>606</del> <del>607</del> <del>610</del> <del>621</del><tr><td>7F<td id=day-1-GXG7F1-2>703 706 707 <del>710</del> 714 717 725</table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>上午第3-4节</h3><table border=1 class=gxg-table><tbody><tr><td>1F<td id=day-1-GXG1F3-4>103 <strong>119</strong> 127<tr><td>2F<td id=day-1-GXG2F3-4><del>203</del> <strong>215</strong> <strong>216</strong> <del>231</del><tr><td>3F<td id=day-1-GXG3F3-4><del>303</del> <del><u>312</u></del> <del><u>320</u></del> <u>325</u> <u>326</u> <del><u>330</u></del><tr><td>4F<td id=day-1-GXG4F3-4><u>403</u> <strong>407</strong> 411 <strong>414</strong> 421 <u>425</u><tr><td>5F<td id=day-1-GXG5F3-4><u>503</u> <u>506</u> <del><u>507</u></del> <del>510</del> <u>517</u> <strong>521</strong><tr><td>6F<td id=day-1-GXG6F3-4><u>614</u> <u>617</u> <u>625</u><tr><td>7F<td id=day-1-GXG7F3-4><del>703</del> <del>706</del> <del>707</del> <del><u>711</u></del> <del>714</del> 717 725</table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>下午第5-6节</h3><table border=1 class=gxg-table><tbody><tr><td>1F<td id=day-1-GXG1F5-6>103 <del><u>106</u></del> <u>111</u> <del><u>116</u></del> <strong>119</strong> <u>122</u> 127<tr><td>2F<td id=day-1-GXG2F5-6><strong>215</strong> <strong>216</strong> <u>221</u> <u>226</u> <u>229</u><tr><td>3F<td id=day-1-GXG3F5-6><del><u>321</u></del> <del>325</del> <del>326</del> <u>329</u><tr><td>4F<td id=day-1-GXG4F5-6>403 <del><u>406</u></del> <strong>407</strong> 411 <strong>414</strong> 421 425<tr><td>5F<td id=day-1-GXG5F5-6>503 <del>506</del> 517 <strong>521</strong><tr><td>6F<td id=day-1-GXG6F5-6><del><u>603</u></del> <u>606</u> <u>607</u> <u>610</u> <u>611</u> 614 617 <u>621</u> 625<tr><td>7F<td id=day-1-GXG7F5-6>717 725</table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>下午第7-8节</h3><table border=1 class=gxg-table><tbody><tr><td>1F<td id=day-1-GXG1F7-8><del>103</del> <del><u>107</u></del> <del>111</del> <del><u>115</u></del> <strong>119</strong> 122 <u>126</u> <del>127</del> <u>129</u><tr><td>2F<td id=day-1-GXG2F7-8><u>204</u> <del><u>211</u></del> <strong>215</strong> <strong>216</strong> <u>220</u> 221 <del><u>225</u></del> <del>226</del> 229<tr><td>3F<td id=day-1-GXG3F7-8><del><u>304</u></del> <del><u>306</u></del> <u>307</u> <u>311</u> <del><u>315</u></del> <u>316</u> 329<tr><td>4F<td id=day-1-GXG4F7-8><del>403</del> <strong>407</strong> <del>411</del> <strong>414</strong> <del>421</del> <del>425</del><tr><td>5F<td id=day-1-GXG5F7-8>503 <u>511</u> <del>517</del> <strong>521</strong> <del><u>525</u></del><tr><td>6F<td id=day-1-GXG6F7-8><del>606</del> <del>607</del> 610 611 <del>614</del> <del>617</del> 621 <del>625</del><tr><td>7F<td id=day-1-GXG7F7-8><del>717</del> <del>725</del></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>晚上第9-10节</h3><table border=1 class=gxg-table><tbody><tr><td>1F<td id=day-1-GXG1F9-10><u>104</u> <strong>119</strong> 122 126 129<tr><td>2F<td id=day-1-GXG2F9-10><u>203</u> 204 <u>206</u> <u>207</u> <strong>215</strong> <strong>216</strong> 220 221 229<tr><td>3F<td id=day-1-GXG3F9-10><u>303</u> 307 311 <u>312</u> 316 <u>320</u> <u>321</u> <u>325</u> <u>326</u> 329 <u>330</u> <u>331</u><tr><td>4F<td id=day-1-GXG4F9-10><u>406</u> <strong>407</strong> <strong>414</strong><tr><td>5F<td id=day-1-GXG5F9-10>503 <u>506</u> <u>507</u> <u>510</u> 511 <u>514</u> <strong>521</strong><tr><td>6F<td id=day-1-GXG6F9-10><u>603</u> 610 611 621<tr><td>7F<td id=day-1-GXG7F9-10><u>703</u> <u>710</u></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>晚上第11-12节</h3><table border=1 class=gxg-table><tbody><tr><td>1F<td id=day-1-GXG1F11-12><u>103</u> 104 <u>106</u> <u>112</u> <u>115</u> <u>116</u> <strong>119</strong> 122 126 <u>127</u> 129<tr><td>2F<td id=day-1-GXG2F11-12>203 204 206 207 <u>211</u> <u>212</u> <strong>215</strong> <strong>216</strong> 220 221 <u>225</u> 229 <u>230</u> <u>231</u><tr><td>3F<td id=day-1-GXG3F11-12>303 <u>304</u> 307 311 312 <u>315</u> 316 320 321 325 326 329 330 331<tr><td>4F<td id=day-1-GXG4F11-12><u>403</u> 406 <strong>407</strong> <u>411</u> <strong>414</strong> <u>421</u> <u>425</u><tr><td>5F<td id=day-1-GXG5F11-12>503 506 507 510 511 514 <strong>521</strong><tr><td>6F<td id=day-1-GXG6F11-12>603 610 611 621<tr><td>7F<td id=day-1-GXG7F11-12>703 <u>707</u> 710</table></div><div class=tab-content id=day-1-benbuqita><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>上午第1-2节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>基础楼<td>综合实验楼<td>地质楼<td>管理楼<tr class=classroom-row><td id=day-1-JCL1-2><strong>217</strong><br><strong>308</strong><td id=day-1-ZHSYL1-2><strong>708</strong><br><strong>1201</strong><td id=day-1-DZL1-2>无<td id=day-1-GLL1-2>3210</table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>上午第3-4节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>基础楼<td>综合实验楼<td>地质楼<td>管理楼<tr class=classroom-row><td id=day-1-JCL3-4><strong>217</strong><br><strong>308</strong><td id=day-1-ZHSYL3-4><strong>708</strong><br><strong>1201</strong><td id=day-1-DZL3-4>无<td id=day-1-GLL3-4><del>3210</del></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>下午第5-6节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>基础楼<td>综合实验楼<td>地质楼<td>管理楼<tr class=classroom-row><td id=day-1-JCL5-6><strong>217</strong><br><strong>308</strong><td id=day-1-ZHSYL5-6><strong>708</strong><br><strong>1201</strong><td id=day-1-DZL5-6>无<td id=day-1-GLL5-6>无</table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>下午第7-8节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>基础楼<td>综合实验楼<td>地质楼<td>管理楼<tr class=classroom-row><td id=day-1-JCL7-8><strong>217</strong><br><strong>308</strong><td id=day-1-ZHSYL7-8><strong>708</strong><br><strong>1201</strong><td id=day-1-DZL7-8>无<td id=day-1-GLL7-8><u>3110</u><br><u>3210</u></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>晚上第9-10节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>基础楼<td>综合实验楼<td>地质楼<td>管理楼<tr class=classroom-row><td id=day-1-JCL9-10><strong>217</strong><br><strong>308</strong><td id=day-1-ZHSYL9-10><strong>708</strong><br><strong>1201</strong><td id=day-1-DZL9-10>无<td id=day-1-GLL9-10>3110<br>3210</table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>晚上第11-12节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>基础楼<td>综合实验楼<td>地质楼<td>管理楼<tr class=classroom-row><td id=day-1-JCL11-12><strong>217</strong><br><strong>308</strong><td id=day-1-ZHSYL11-12><strong>708</strong><br><strong>1201</strong><td id=day-1-DZL11-12>无<td id=day-1-GLL11-12>3110<br>3210</table></div><div class=tab-content id=day-1-nanxiaoqu><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>上午第1-2节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>科技楼<td>人文楼<tr class=classroom-row><td style="font-size: 13px"id=day-1-KJL1-2><strong>1062</strong> <strong>2011</strong> <strong>2037</strong> <strong>2060</strong> <strong>2066</strong> <strong>2080</strong> <strong>3051</strong> <strong>3067</strong> <strong>4002</strong> <strong>4005</strong> <strong>4031</strong> <strong>4042</strong> 5002 <strong>5066</strong><br><strong>6001-A自习室A</strong><br><strong>6004自习室B</strong><br>6009-1A自习室I<br><del>6009自习室G</del><br><del>6010-1A自习室F</del><br><del>6010自习室E</del><br>6011自习室K<br><strong>6014-1A自习室J</strong><br><del>6014自习室H</del><br><del>6016自习室L</del><br><del>6017自习室R</del><br><strong>6019自习室T</strong><br><strong>6022-1A自习室N</strong><br>6022-A自习室M<br>6024自习室O<br><del>6026-A自习室Q</del><br><strong>6026自习室P</strong><br><strong>6028自习室S</strong><td style="font-size: 13px"id=day-1-RWL1-2><strong>201</strong> 205 208 <strong>209</strong> 212 213 216 220 <del>225</del> <del>228</del> <del>229</del> <del>232</del> <strong>308</strong> <del>328</del> <del>401</del> <del>405</del> <strong>510</strong> <strong>518</strong> <strong>620</strong> <strong>637</strong> <strong>701</strong> <strong>710</strong> <strong>728</strong></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>上午第3-4节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>科技楼<td>人文楼<tr class=classroom-row><td style="font-size: 13px"id=day-1-KJL3-4><strong>1062</strong> <u>1076</u> <strong>2011</strong> <strong>2037</strong> <strong>2060</strong> <strong>2066</strong> <strong>2080</strong> <strong>3051</strong> <strong>3067</strong> <strong>4002</strong> <strong>4005</strong> <strong>4031</strong> <strong>4042</strong> <del>5002</del> <strong>5066</strong> <del><u>6062</u></del><br><u>6001-1A自习室C</u><br><strong>6001-A自习室A</strong><br><u>6003自习室D</u><br><strong>6004自习室B</strong><br>6009-1A自习室I<br>6011自习室K<br><strong>6014-1A自习室J</strong><br><strong>6019自习室T</strong><br><strong>6022-1A自习室N</strong><br>6022-A自习室M<br>6024自习室O<br><strong>6026自习室P</strong><br><strong>6028自习室S</strong><td style="font-size: 13px"id=day-1-RWL3-4><strong>201</strong> 205 <del>208</del> <strong>209</strong> 212 213 216 220 <strong>308</strong> <strong>510</strong> <strong>518</strong> <strong>620</strong> <strong>637</strong> <strong>701</strong> <strong>710</strong> <strong>728</strong></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>下午第5-6节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>科技楼<td>人文楼<tr class=classroom-row><td style="font-size: 13px"id=day-1-KJL5-6><strong>1062</strong> 1076 <strong>2011</strong> <strong>2037</strong> <strong>2060</strong> <strong>2066</strong> <strong>2080</strong> <strong>3051</strong> <strong>3067</strong> <strong>4002</strong> <strong>4005</strong> <strong>4031</strong> <strong>4042</strong> <strong>5066</strong> <u>5068</u><br>6001-1A自习室C<br><strong>6001-A自习室A</strong><br>6003自习室D<br><strong>6004自习室B</strong><br>6009-1A自习室I<br><u>6009自习室G</u><br><u>6010-1A自习室F</u><br><u>6010自习室E</u><br><del>6011自习室K</del><br><strong>6014-1A自习室J</strong><br><u>6014自习室H</u><br><del><u>6016自习室L</u></del><br><u>6017自习室R</u><br><strong>6019自习室T</strong><br><strong>6022-1A自习室N</strong><br><del>6022-A自习室M</del><br><del>6024自习室O</del><br><u>6026-A自习室Q</u><br><strong>6026自习室P</strong><br><strong>6028自习室S</strong><td style="font-size: 13px"id=day-1-RWL5-6><strong>201</strong> 205 <strong>209</strong> 212 213 216 <u>217</u> 220 <u>225</u> <u>228</u> <u>229</u> <u>232</u> <strong>308</strong> <u>328</u> <u>401</u> <u>405</u> <strong>510</strong> <strong>518</strong> <strong>620</strong> <strong>637</strong> <strong>701</strong> <strong>710</strong> <strong>728</strong></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>下午第7-8节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>科技楼<td>人文楼<tr class=classroom-row><td style="font-size: 13px"id=day-1-KJL7-8><strong>1062</strong> 1076 <strong>2011</strong> <strong>2037</strong> <strong>2060</strong> <strong>2066</strong> <strong>2080</strong> <strong>3051</strong> <strong>3067</strong> <strong>4002</strong> <strong>4005</strong> <strong>4031</strong> <strong>4042</strong> <strong>5066</strong> 5068<br>6001-1A自习室C<br><strong>6001-A自习室A</strong><br>6003自习室D<br><strong>6004自习室B</strong><br><del>6009-1A自习室I</del><br>6009自习室G<br>6010-1A自习室F<br>6010自习室E<br><strong>6014-1A自习室J</strong><br>6014自习室H<br><del>6017自习室R</del><br><strong>6019自习室T</strong><br><strong>6022-1A自习室N</strong><br>6026-A自习室Q<br><strong>6026自习室P</strong><br><strong>6028自习室S</strong><td style="font-size: 13px"id=day-1-RWL7-8><strong>201</strong> <del>205</del> <del><u>208</u></del> <strong>209</strong> <del>212</del> <del>213</del> <del>216</del> <del>217</del> <del>220</del> <del><u>221</u></del> <del><u>224</u></del> <del>225</del> <del>228</del> <del>229</del> <del>232</del> <strong>308</strong> <del>328</del> <del>401</del> <del>405</del> <strong>510</strong> <strong>518</strong> <strong>620</strong> <strong>637</strong> <strong>701</strong> <strong>710</strong> <strong>728</strong></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>晚上第9-10节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>科技楼<td>人文楼<tr class=classroom-row><td style="font-size: 13px"id=day-1-KJL9-10><strong>1062</strong> 1076 <strong>2011</strong> <strong>2037</strong> <strong>2060</strong> <strong>2066</strong> <strong>2080</strong> <strong>3051</strong> <strong>3067</strong> <strong>4002</strong> <strong>4005</strong> <strong>4031</strong> <strong>4042</strong> <u>5002</u> <strong>5066</strong> 5068 <u>6054</u> <u>6058</u> <u>6062</u><br>6001-1A自习室C<br><strong>6001-A自习室A</strong><br>6003自习室D<br><strong>6004自习室B</strong><br>6009自习室G<br>6010-1A自习室F<br>6010自习室E<br><u>6011自习室K</u><br><strong>6014-1A自习室J</strong><br>6014自习室H<br><strong>6019自习室T</strong><br><strong>6022-1A自习室N</strong><br>6026-A自习室Q<br><strong>6026自习室P</strong><br><strong>6028自习室S</strong><td style="font-size: 13px"id=day-1-RWL9-10><strong>201</strong> <strong>209</strong> <strong>308</strong> <strong>510</strong> <strong>518</strong> <strong>620</strong> <strong>637</strong> <strong>701</strong> <strong>710</strong> <strong>728</strong></table><h3 class=timeslot-title onclick=toggleTable(this)><span class=toggle-icon> <svg height=16 width=16><use href=#icon-chevron-down></use></svg> </span>晚上第11-12节</h3><table border=1 class=campus-table><tbody><tr class=building-name-row><td>科技楼<td>人文楼<tr class=classroom-row><td style="font-size: 13px"id=day-1-KJL11-12><strong>1062</strong> 1076 <strong>2011</strong> <strong>2037</strong> <strong>2060</strong> <strong>2066</strong> <strong>2080</strong> <strong>3051</strong> <strong>3067</strong> <strong>4002</strong> <strong>4005</strong> <strong>4031</strong> <strong>4042</strong> 5002 <strong>5066</strong> 5068 6054 6058 6062<br>6001-1A自习室C<br><strong>6001-A自习室A</strong><br>6003自习室D<br><strong>6004自习室B</strong><br>6009自习室G<br>6010-1A自习室F<br>6010自习室E<br>6011自习室K<br><strong>6014-1A自习室J</strong><br>6014自习室H<br><strong>6019自习室T</strong><br><strong>6022-1A自习室N</strong><br>6026-A自习室Q<br><strong>6026自习室P</strong><br><strong>6028自习室S</strong><td style="font-size: 13px"id=day-1-RWL11-12><strong>201</strong> <u>208</u> <strong>209</strong> <strong>308</strong> <strong>510</strong> <strong>518</strong> <strong>620</strong> <strong>637</strong> <strong>701</strong> <strong>710</strong> <strong>728</strong></table></div></div></div></div><div class=collapsible-container><button class=collapsible-toggle onclick=toggleClick(this)><span class=toggle-text>使用须知</span> <svg class=toggle-icon height=12 width=12><use href=#icon-chevron-down></use></svg></button><div class=collapsible-content><div class=collapsible-inner><p style="text-align: justify; font-size: 75%;"class=info-text>● <u>下划线</u>表示该教室在上一时段未处于空闲，<strong>加粗体</strong>表示教室全天(1-12节)空闲，<del>删除线</del>表示教室将于下一时段被占用。<p style="text-align: justify; font-size: 75%;"class=info-text>● 本表不显示机房、实验室、语音室、研讨室、多功能、活动教室、智慧教室、不排课教室、体育教学场地。大学会馆、旧实验楼以及科技楼的部分特殊教室被排除在外。教务系统中信息存在异常项的教室及某些位于 blacklist 中的教室也不会予以显示。<p style="text-align: justify; font-size: 75%;"class=info-text>● 因节假日调休时，教务系统未更新会导致本表无法显示当日正确的教室信息，请使用未来一周内对应信息作为参考（例如，若调休日上周三课程，那么就参考未来一周内周三那天的空教室表）。<p style="text-align: justify; font-size: 75%;"class=info-text>◆ 内容仅供参考，实际请以<a href=https://jwxt.neuq.edu.cn/>教务系统</a>查询结果为准。</div></div></div><div class=collapsible-container><button class=collapsible-toggle onclick=toggleClick(this)><span class=toggle-text>Credits</span> <svg class=toggle-icon height=12 width=12><use href=#icon-chevron-down></use></svg></button><div class=collapsible-content><div class=collapsible-inner><p class=info-text>由 <a href=https://aistudio.xiaomimimo.com/> <svg style="display: inline-block; vertical-align: -0.17em;"height=1em width=1em><use href=#icon-xiaomi></use></svg>MIMO</a> 和 <a href=https://chat.deepseek.com/> <svg style="display: inline-block; vertical-align: -0.15em;"height=1em width=1em><use href=#icon-deepseek></use></svg>Deepseek</a> 创建<p class=info-text>通过 <a href=https://developers.cloudflare.com/workers/> <svg style="display: inline-block; vertical-align: -0.11em;"height=1em width=1em><use href=#icon-cloudflare></use></svg>Cloudflare Pages</a> 部署<p class=info-text>感谢 @<a href=https://github.com/Ferry-200>Ferry-200</a> 的<a href=https://github.com/Ferry-200/neuq-free-classroom>项目</a>提供了优化构建的思路<p class=info-text>以及 <a href=https://www.jetbrains.com/lp/mono/><svg style="display: inline-block; vertical-align: -0.13em;"height=1em width=1em><use href=#icon-jetbrains></use></svg>JetBrains Mono</a> 字体<p class=info-text>和 @<a href=https://github.com/lxgw>LXGW</a> 制作的<a href=https://github.com/lxgw/LxgwWenKai>霞鹜文楷</a>字体<p class=info-text>还有 @<a href=https://www.urongda.com/>urongda</a> 提供的矢量校徽</div></div></div><div class=theme-controls><button class=theme-btn id=mode-toggle-btn onclick=cycleMode() title=切换明暗模式>AUTO</button><select id=theme-preset-select onchange=applyPresetTheme(this) title=选择预设主题><option value>默认主题<option value=ayu>Ayu<option value=catppuccin>Catppuccin<option value=everforest>Everforest<option value=gruvbox>Gruvbox<option value=kanagawa>Kanagawa<option value=nord>Nord<option value=tokyonight>Tokyo Night</select><button class=theme-btn onclick=document.getElementById('theme-file-input').click() title=导入自定义主题配置文件><svg style="vertical-align: -2px;"height=14 width=14><use href=#icon-upload></use></svg> 导入主题</button><input style="display: none;"accept=.toml id=theme-file-input onchange=importThemeFile(this) type=file><button class=theme-btn onclick=resetTheme() title=恢复默认主题><svg style="vertical-align: -2px;"height=14 width=14><use href=#icon-reset></use></svg> 重置</button><button class=theme-btn onclick=window.open('theme-guide.html','_blank') title=查看主题配置指南><svg style="vertical-align: -2px;"height=14 width=14><use href=#icon-guide></use></svg> 配置指南</button><span class=theme-name-display id=theme-name></span></div><p style="font-size: 80%;"class=info-text>Ver3.2.0 <a href=https://github.com/TsiaohanWang/neuq-classroom-query>项目入口</a></p><meta content={"1":"c4c1e8d2bf4e93d8b2bc58d71cbabaf1","0":"f74a93a758ca081c4cdd4ffa1934d093"} name=page-content-hash><script>// 主题配置系统
+        (function () {
+            const THEME_STORAGE_KEY = 'neuq_theme_config';
+            const MODE_STORAGE_KEY = 'neuq_mode_preference';
+
+            // 预设主题列表及缓存
+            const PRESET_THEMES = ['ayu', 'catppuccin', 'everforest', 'gruvbox', 'kanagawa', 'nord', 'tokyonight'];
+            var themeCache = {};
+
+            // 预加载所有预设主题 TOML
+            function preloadPresets() {
+                return Promise.all(PRESET_THEMES.map(function (name) {
+                    return fetch('/assets/themes/' + name + '.toml')
+                        .then(function (res) { return res.text(); })
+                        .then(function (text) { themeCache[name] = text; })
+                        .catch(function () { });
+                }));
+            }
+
+            // 等待所有 CSS <link> 加载完成
+            function waitForCSS() {
+                var links = document.querySelectorAll('link[rel="stylesheet"]');
+                return Promise.all(Array.prototype.map.call(links, function (link) {
+                    if (link.sheet) return Promise.resolve();
+                    return new Promise(function (resolve) {
+                        link.addEventListener('load', resolve);
+                        link.addEventListener('error', resolve);
+                    });
+                }));
+            }
+
+            // 标记页面加载完成，显示校徽
+            function markPageLoaded() {
+                document.documentElement.classList.add('page-loaded');
+            }
+
+            // 将 snake_case 转为 CSS 变量名 --kebab-case
+            function toCssVar(key) {
+                return '--' + key.replace(/_/g, '-');
+            }
+
+            // 应用主题 CSS 变量
+            function applyTheme(themeData) {
+                const styleEl = document.getElementById('theme-style');
+                if (!styleEl) return;
+
+                let css = '';
+
+                // 亮色模式变量
+                if (themeData.light && Object.keys(themeData.light).length > 0) {
+                    css += ':root{';
+                    for (const [key, value] of Object.entries(themeData.light)) {
+                        css += `${toCssVar(key)}:${value};`;
+                    }
+                    css += '}';
+                }
+
+                // 暗色模式变量
+                if (themeData.dark && Object.keys(themeData.dark).length > 0) {
+                    css += 'html.dark{';
+                    for (const [key, value] of Object.entries(themeData.dark)) {
+                        css += `${toCssVar(key)}:${value};`;
+                    }
+                    css += '}';
+                }
+
+                // 布局变量
+                if (themeData.layout && Object.keys(themeData.layout).length > 0) {
+                    css += ':root{';
+                    for (const [key, value] of Object.entries(themeData.layout)) {
+                        css += `${toCssVar(key)}:${value};`;
+                    }
+                    css += '}';
+                }
+
+                styleEl.textContent = css;
+
+                // 仅当用户未手动设置模式时，才应用主题配置的 mode
+                if (!localStorage.getItem(MODE_STORAGE_KEY)) {
+                    applyMode(themeData.mode);
+                }
+            }
+
+            // 应用明暗模式
+            function applyMode(mode) {
+                if (mode === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else if (mode === 'light') {
+                    document.documentElement.classList.remove('dark');
+                } else {
+                    // auto: 跟随系统
+                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                }
+                updateModeToggle(mode || 'auto');
+            }
+
+            // 用户通过切换按钮设置明暗模式
+            var MODE_CYCLE = ['auto', 'light', 'dark'];
+            var MODE_LABELS = { auto: 'AUTO', light: 'LIGHT', dark: 'DARK' };
+            window.cycleMode = function () {
+                var cur = localStorage.getItem(MODE_STORAGE_KEY) || 'auto';
+                var next = MODE_CYCLE[(MODE_CYCLE.indexOf(cur) + 1) % 3];
+                localStorage.setItem(MODE_STORAGE_KEY, next);
+                applyMode(next);
+            };
+
+            // 更新切换按钮文字
+            function updateModeToggle(mode) {
+                var btn = document.getElementById('mode-toggle-btn');
+                if (btn) btn.textContent = MODE_LABELS[mode] || 'AUTO';
+            }
+
+            // 解析 TOML（轻量级解析器，仅支持本项目主题格式）
+            function parseToml(text) {
+                const result = { light: {}, dark: {}, layout: {} };
+                let currentSection = null;
+                let currentSubSection = null;
+
+                for (let line of text.split('\n')) {
+                    line = line.trim();
+                    if (!line || line.startsWith('#')) continue;
+
+                    // 检测顶层 section [name]
+                    const sectionMatch = line.match(/^\[(\w+)\]$/);
+                    if (sectionMatch) {
+                        currentSection = sectionMatch[1];
+                        currentSubSection = null;
+                        continue;
+                    }
+
+                    // 检测子 section [parent.child]
+                    const subSectionMatch = line.match(/^\[(\w+)\.(\w+)\]$/);
+                    if (subSectionMatch) {
+                        currentSection = subSectionMatch[1];
+                        currentSubSection = subSectionMatch[2];
+                        continue;
+                    }
+
+                    // 解析 key = "value"
+                    const kvMatch = line.match(/^(\w+)\s*=\s*"([^"]*)"$/);
+                    if (kvMatch) {
+                        const key = kvMatch[1];
+                        const value = kvMatch[2];
+
+                        if (!currentSection && (key === 'name' || key === 'mode')) {
+                            result[key] = value;
+                        } else if (currentSection === 'light') {
+                            result.light[key] = value;
+                        } else if (currentSection === 'dark') {
+                            result.dark[key] = value;
+                        } else if (currentSection === 'layout') {
+                            result.layout[key] = value;
+                        }
+                    }
+                }
+
+                return result;
+            }
+
+            // 初始化主题
+            function initTheme() {
+                // 先恢复用户模式偏好（优先于主题配置的 mode）
+                var savedMode = localStorage.getItem(MODE_STORAGE_KEY);
+                applyMode(savedMode || 'auto');
+
+                var saved = localStorage.getItem(THEME_STORAGE_KEY);
+                if (saved) {
+                    try {
+                        const themeData = JSON.parse(saved);
+                        // 仅当用户未设置独立模式偏好时，才使用主题配置的 mode
+                        if (!savedMode && themeData.mode) {
+                            applyMode(themeData.mode);
+                        }
+                        applyTheme(themeData);
+                        updateThemeUI(themeData.name || null);
+                        if (themeData._preset) {
+                            var sel = document.getElementById('theme-preset-select');
+                            if (sel) sel.value = themeData._preset;
+                        }
+                    } catch (e) {
+                        console.warn('Failed to parse theme config:', e);
+                    }
+                }
+            }
+
+            // 文件导入处理
+            window.importThemeFile = function (fileInput) {
+                const file = fileInput.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    try {
+                        const content = e.target.result;
+                        let themeData;
+
+                        if (file.name.endsWith('.toml')) {
+                            themeData = parseToml(content);
+                        } else {
+                            alert('不支持的文件格式，请使用 .toml 文件');
+                            return;
+                        }
+
+                        // 验证结构
+                        if (!themeData.light) themeData.light = {};
+                        if (!themeData.dark) themeData.dark = {};
+                        if (!themeData.layout) themeData.layout = {};
+
+                        // 保存到 localStorage
+                        localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(themeData));
+
+                        // 应用主题
+                        applyTheme(themeData);
+
+                        // 清除预设下拉选择
+                        var sel = document.getElementById('theme-preset-select');
+                        if (sel) sel.value = '';
+
+                        // 更新 UI
+                        updateThemeUI(themeData.name || file.name);
+
+                    } catch (err) {
+                        alert('主题文件解析失败: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+
+            // 预设主题
+            window.applyPresetTheme = function (select) {
+                const name = select.value;
+                if (!name) {
+                    window.resetTheme();
+                    return;
+                }
+                var text = themeCache[name];
+                if (!text) return;
+                var themeData = parseToml(text);
+                if (!themeData.light) themeData.light = {};
+                if (!themeData.dark) themeData.dark = {};
+                if (!themeData.layout) themeData.layout = {};
+                themeData._preset = name;
+                applyMode(themeData.mode);
+                applyTheme(themeData);
+                localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(themeData));
+                updateThemeUI(themeData.name || name);
+            };
+
+            // 重置主题
+            window.resetTheme = function () {
+                localStorage.removeItem(THEME_STORAGE_KEY);
+                localStorage.removeItem(MODE_STORAGE_KEY);
+                var styleEl = document.getElementById('theme-style');
+                if (styleEl) styleEl.textContent = '';
+                var sel = document.getElementById('theme-preset-select');
+                if (sel) sel.value = '';
+                updateThemeUI(null);
+                // 恢复系统偏好
+                applyMode('auto');
+            };
+
+            // 更新 UI 显示
+            function updateThemeUI(themeName) {
+                const nameEl = document.getElementById('theme-name');
+                if (nameEl) {
+                    nameEl.textContent = themeName ? `当前: ${themeName}` : '';
+                }
+            }
+
+            // 等待 CSS 加载 + 预加载预设主题 + 初始化主题，然后显示校徽
+            Promise.all([waitForCSS(), preloadPresets()]).then(function () {
+                initTheme();
+                markPageLoaded();
+            });
+        })();</script><script>let currentDay = 0;
+        const totalDays = 2;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            updateDateDisplay();
+        });
+
+        function changeDay(offset) {
+            const newDay = currentDay + offset;
+
+            if (newDay >= 0 && newDay < totalDays) {
+                document.getElementById('day-' + currentDay + '-content').classList.remove('active');
+
+                currentDay = newDay;
+
+                document.getElementById('day-' + currentDay + '-content').classList.add('active');
+                updateDateDisplay();
+            }
+        }
+
+        function updateDateDisplay() {
+            const today = new Date();
+            const targetDate = new Date();
+            targetDate.setDate(today.getDate() + currentDay);
+
+            const year = targetDate.getFullYear();
+            const month = (targetDate.getMonth() + 1).toString().padStart(2, '0');
+            const day = targetDate.getDate().toString().padStart(2, '0');
+
+            document.getElementById('current-date-placeholder').textContent = `${year}/${month}/${day}`;
+
+            let displayLabel = '';
+            if (currentDay === 0) {
+                displayLabel = `今天 (${month}/${day})`;
+            } else if (currentDay === 1) {
+                displayLabel = `明天 (${month}/${day})`;
+            } else {
+                const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+                displayLabel = `${weekdays[targetDate.getDay()]} (${month}/${day})`;
+            }
+            document.getElementById('date-display').textContent = displayLabel;
+
+            document.getElementById('prev-day-btn').disabled = (currentDay === 0);
+            document.getElementById('next-day-btn').disabled = (currentDay === totalDays - 1);
+        }
+
+        function openTab(evt, tabName) {
+            const tabContainer = evt.currentTarget.closest('.tab-container');
+            if (!tabContainer) return;
+
+            Array.from(tabContainer.getElementsByClassName("tab-content")).forEach(tc => tc.classList.remove("active"));
+            Array.from(tabContainer.getElementsByClassName("tab-button")).forEach(tb => tb.classList.remove("active"));
+
+            const targetTab = document.getElementById(tabName);
+            if (targetTab) {
+                targetTab.classList.add("active");
+            }
+            evt.currentTarget.classList.add("active");
+        }
+
+        function toggleTable(headerElement) {
+            const table = headerElement.nextElementSibling;
+            if (table && table.tagName === 'TABLE') {
+                const icon = headerElement.querySelector('.toggle-icon');
+                if (table.style.display === 'none') {
+                    table.style.display = '';
+                    icon.classList.remove('collapsed');
+                } else {
+                    table.style.display = 'none';
+                    icon.classList.add('collapsed');
+                }
+            }
+        }
+
+        function toggleClick(button) {
+            const container = button.closest('.collapsible-container');
+            if (container) {
+                container.classList.toggle('expanded');
+            }
+        }
+
+        // 异步加载并注入 SVG icons
+        (function () {
+            fetch('/assets/icons/icons.svg')
+                .then(function (response) {
+                    return response.text();
+                })
+                .then(function (svgText) {
+                    var div = document.createElement('div');
+                    div.style.display = 'none';
+                    div.innerHTML = svgText;
+                    document.body.insertBefore(div, document.body.firstChild);
+                })
+                .catch(function (error) {
+                    console.error('Failed to load SVG icons:', error);
+                });
+        })();</script>
