@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # ============================================================
 # 境内服务器一键部署脚本
-# 用法：bash setup.sh   （Ubuntu / Debian）
+# 用法：bash setup.sh
+# 兼容：Ubuntu / Debian（apt） 与 Alibaba Cloud Linux / CentOS / RHEL（dnf/yum）
 # 作用：
 #   1. 安装 Rust、Node.js(wrangler)
 #   2. 克隆/更新仓库
@@ -15,9 +16,32 @@ cd "$(dirname "$0")"
 REPO_DIR="$(cd .. && pwd)/neuq-classroom-query"
 ENV_FILE="$(pwd)/.env"
 
+# ---- 探测发行版，选择包管理器 ----
+if command -v dnf >/dev/null 2>&1; then
+  PM="dnf"
+elif command -v yum >/dev/null 2>&1; then
+  PM="yum"
+elif command -v apt-get >/dev/null 2>&1; then
+  PM="apt"
+else
+  echo "✖ 找不到 dnf / yum / apt-get，请用 Ubuntu/Debian 或 Alibaba Cloud Linux/CentOS/RHEL" >&2
+  exit 1
+fi
+echo "== 检测到包管理器: $PM =="
+
 echo "== 1/5 安装系统依赖 =="
-sudo apt-get update -qq
-sudo apt-get install -y -qq curl git build-essential pkg-config libssl-dev >/dev/null
+case "$PM" in
+  dnf)
+    sudo dnf install -y -q curl git gcc gcc-c++ make pkgconfig openssl-devel >/dev/null
+    ;;
+  yum)
+    sudo yum install -y -q curl git gcc gcc-c++ make pkgconfig openssl-devel >/dev/null
+    ;;
+  apt)
+    sudo apt-get update -qq
+    sudo apt-get install -y -qq curl git build-essential pkg-config libssl-dev >/dev/null
+    ;;
+esac
 
 echo "== 2/5 安装 Rust =="
 if ! command -v cargo >/dev/null 2>&1; then
@@ -27,14 +51,32 @@ fi
 . "$HOME/.cargo/env"
 
 echo "== 3/5 安装 Node + wrangler =="
+# 用官方 Node LTS 二进制（不依赖发行版包管理器，Alibaba Cloud Linux 也能用）
 if ! command -v node >/dev/null 2>&1; then
-  curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - >/dev/null
-  sudo apt-get install -y -qq nodejs >/dev/null
+  NODE_VER="v20.18.0"
+  ARCH="$(uname -m)"
+  case "$ARCH" in
+    x86_64)  NODE_ARCH="x64" ;;
+    aarch64) NODE_ARCH="arm64" ;;
+    *)       echo "✖ 未知架构 $ARCH，请手动安装 Node 18+"; exit 1 ;;
+  esac
+  mkdir -p "$HOME/.local/node-$NODE_VER"
+  curl -fsSL "https://nodejs.org/dist/${NODE_VER}/node-${NODE_VER}-linux-${NODE_ARCH}.tar.xz" \
+    | tar -xJ -C "$HOME/.local/node-$NODE_VER" --strip-components=1
+  ln -sf "$HOME/.local/node-$NODE-ver/bin/node" /usr/local/bin/node 2>/dev/null || true
+  ln -sf "$HOME/.local/node-$NODE-ver/bin/npm"  /usr/local/bin/npm  2>/dev/null || true
+  echo "Node ${NODE_VER} 解压到 $HOME/.local/node-${NODE_VER}"
 fi
+# 确保后续命令能用 node/npm
+if ! command -v node >/dev/null 2>&1; then
+  export PATH="$HOME/.local/node-${NODE_VER}/bin:$PATH"
+fi
+echo "node: $(command -v node) | 版本: $(node -v 2>/dev/null)"
 if ! command -v wrangler >/dev/null 2>&1; then
-  sudo npm install -g wrangler >/dev/null 2>&1 || npm install -g wrangler >/dev/null
+  npm install -g wrangler >/dev/null 2>&1 || true
 fi
-echo "wrangler 版本: $(wrangler --version 2>/dev/null || echo '需 npx 方式')"
+# run.sh 已自带 npx wrangler 兜底，这里仅尝试全局装一次
+echo "wrangler 全局: $(command -v wrangler || echo '将使用 npx wrangler')"
 
 echo "== 4/5 克隆/更新仓库 =="
 if [ ! -d "$REPO_DIR/.git" ]; then
