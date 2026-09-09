@@ -12,8 +12,6 @@
 
 由于东秦教务系统网站时有变动，可能会导致自动化运行失效，**请以教务系统实际查询结果为准**。
 
-本项目的诞生离不开 Xiaomi MIMO 和 Deepseek 的协助。同时也感谢 [Ferry-200 的项目](https://github.com/Ferry-200/neuq-free-classroom) 提供了优化构建的思路。
-
 ---
 
 ## 本地测试
