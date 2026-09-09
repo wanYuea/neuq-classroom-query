@@ -32,14 +32,16 @@ jobs:
             . "$HOME/.cargo/env"
             cargo build --profile ci
             cp target/ci/neuq-classroom-query /src/neuq-classroom-query-linux-x86_64
+            # 容器内是 root，必须在容器里 chmod，否则宿主机 runner 无权改权限
+            chmod 755 /src/neuq-classroom-query-linux-x86_64
           '
 
       - name: Publish to Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          chmod +x neuq-classroom-query-linux-x86_64
           ls -lh neuq-classroom-query-linux-x86_64
+          file neuq-classroom-query-linux-x86_64 || true
           gh release create prebuilt-linux-x64 \
             --title "Linux x86_64 预编译二进制" \
             --notes "GitHub Actions 自动构建（AlmaLinux 9 / glibc 2.34）。用于境内小内存服务器免编译部署：下载后 chmod +x 即可运行。" \
