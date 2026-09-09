@@ -39,9 +39,16 @@ if [ -d "$REPO_DIR/.git" ]; then
 fi
 
 echo "=== 编译 ==="
-# -j 2 限制并行：2GiB 小内存机器上全并行编译会 OOM（SIGKILL），
-# 内存富余的机器可设 CARGO_JOBS 提高（如 CARGO_JOBS=4 bash run.sh）
+# -j 限制 crate 并行；小内存机器再把 codegen-units 从 256 降到 16（256 是 OOM 主因）。
+# 内存富余可用 CARGO_JOBS / CARGO_PROFILE_CI_CODEGEN_UNITS 覆盖。
 JOBS="${CARGO_JOBS:-2}"
+if [ -z "${CARGO_PROFILE_CI_CODEGEN_UNITS:-}" ]; then
+  MEM_KB="$(awk '/MemTotal/ {print $2}' /proc/meminfo 2>/dev/null || echo 8000000)"
+  if [ "${MEM_KB:-8000000}" -lt 3000000 ]; then
+    export CARGO_PROFILE_CI_CODEGEN_UNITS=16
+    echo "  小内存机器(<3GiB)：codegen-units 降为 16，防止编译 OOM"
+  fi
+fi
 cargo build --manifest-path "$REPO_DIR/Cargo.toml" --profile ci --target-dir "$WORK_DIR/target" -j "$JOBS"
 
 echo "=== 抓取（WebVPN CAS/SSO）==="
