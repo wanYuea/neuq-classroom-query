@@ -25,7 +25,9 @@ jobs:
         run: |
           docker run --rm -v "$PWD":/src -w /src almalinux:9 bash -lc '
             set -e
-            dnf install -y -q gcc gcc-c++ make openssl-devel pkgconfig curl perl
+            # 注意：AlmaLinux 9 预装 curl-minimal（已提供 curl 命令），
+            # 再装 curl 包会冲突报错，故此处不装 curl
+            dnf install -y -q gcc gcc-c++ make openssl-devel pkgconfig perl tar gzip git
             curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
             . "$HOME/.cargo/env"
             cargo build --profile ci
