@@ -34,6 +34,10 @@ jobs:
             cp target/ci/neuq-classroom-query /src/neuq-classroom-query-linux-x86_64
             # 容器内是 root，必须在容器里 chmod，否则宿主机 runner 无权改权限
             chmod 755 /src/neuq-classroom-query-linux-x86_64
+            # 同时产出 gzip 压缩包（约 1/3 体积），供境内服务器快速下载
+            dnf install -y -q gzip >/dev/null 2>&1 || true
+            gzip -9 -c /src/neuq-classroom-query-linux-x86_64 > /src/neuq-classroom-query-linux-x86_64.gz
+            chmod 644 /src/neuq-classroom-query-linux-x86_64.gz
           '
 
       - name: Publish to Release
@@ -47,4 +51,6 @@ jobs:
             --notes "GitHub Actions 自动构建（AlmaLinux 9 / glibc 2.34）。用于境内小内存服务器免编译部署：下载后 chmod +x 即可运行。" \
             --target "${GITHUB_SHA}" 2>/dev/null || true
           gh release upload prebuilt-linux-x64 neuq-classroom-query-linux-x86_64 --clobber
-          echo "下载地址：https://github.com/${GITHUB_REPOSITORY}/releases/download/prebuilt-linux-x64/neuq-classroom-query-linux-x86_64"
+          gh release upload prebuilt-linux-x64 neuq-classroom-query-linux-x86_64.gz --clobber
+          echo "原始：https://github.com/${GITHUB_REPOSITORY}/releases/download/prebuilt-linux-x64/neuq-classroom-query-linux-x86_64"
+          echo "压缩包(推荐境内下载，约1/3体积)：https://github.com/${GITHUB_REPOSITORY}/releases/download/prebuilt-linux-x64/neuq-classroom-query-linux-x86_64.gz"
