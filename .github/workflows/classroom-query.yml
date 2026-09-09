@@ -1,12 +1,11 @@
-name: Rust Classroom Query and Deploy Automation
+name: NEUQ Classroom Query (WebVPN CAS/SSO)
 
 on:
   push:
     branches: [ main, master ]
-  # 定时构建已改由 Cloudflare Pages 承担（见 DEPLOY.md）。
-  # 教务系统目前对外返回 483，定时跑只会持续失败；恢复后取消下面三行注释即可重新启用。
-  # schedule:
-  #   - cron: '30 * * * *'
+  schedule:
+    # GitHub Actions cron 为 UTC。每小时 20 分触发，避开 Cloudflare 侧的 30 分
+    - cron: '20 * * * *'
   workflow_dispatch:
     inputs:
       force_overwrite:
@@ -26,68 +25,40 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 60
+
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Setup Rust
-      uses: dtolnay/rust-toolchain@stable
-      with:
-        toolchain: stable
-        
+
+    - uses: dtolnay/rust-toolchain@stable
+
     - name: Cache Rust dependencies
       uses: actions/cache@v4
       with:
         path: |
-          ~/.cargo/bin/
           ~/.cargo/registry/index/
           ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
+          ~/.cargo/git/db/
+          target/
         key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock') }}
         restore-keys: |
           ${{ runner.os }}-cargo-
-          
-    - name: Install mold linker
-      run: sudo apt-get install -y mold
 
-    - name: Build Rust project
+    - name: Build & deploy (fetch via WebVPN CAS/SSO)
       env:
-        RUSTFLAGS: "-C linker=clang -C link-arg=-fuse-ld=mold"
-      run: cargo build --profile ci
-
-    - name: Run tests
-      run: cargo test
-
-    - name: Fetch Classroom Data
-      env:
+        # 教务账号（学号 + 密码），门户缺省复用同一组凭据
         YOUR_NEUQ_USERNAME: ${{ secrets.YOUR_NEUQ_USERNAME }}
         YOUR_NEUQ_PASSWORD: ${{ secrets.YOUR_NEUQ_PASSWORD }}
+        # 通过校外 WebVPN 重写地址抓取（门户 CAS 统一认证，eams 由 SSO 放行）
+        NEUQ_JWXT_BASE_URL: "https://vpn.neuq.edu.cn/http/77726476706e69737468656265737421fae05988693e6d456f468ca88d1b203b/eams/"
+        NEUQ_VPN_ENABLED: "true"
+        NEUQ_VPN_BASE_URL: "https://vpn.neuq.edu.cn"
+        NEUQ_VPN_AUTH_METHOD: "cas"
         ASSETS_DIR: ./assets
         OUTPUT_DIR: ./output
+        TOTAL_DAYS: "7"
         FORCE_OVERWRITE: ${{ inputs.force_overwrite || 'false' }}
-      run: ./target/ci/neuq-classroom-query fetch
-
-    - name: Process Data
-      env:
-        ASSETS_DIR: ./assets
-        OUTPUT_DIR: ./output
-      run: ./target/ci/neuq-classroom-query process
-
-    - name: Generate HTML
-      env:
-        ASSETS_DIR: ./assets
-        OUTPUT_DIR: ./output
-      run: ./target/ci/neuq-classroom-query generate
-
-    - name: Assemble Pages output
-      run: |
-        mkdir -p public
-        cp index.html public/
-        cp -r assets public/
-        if [ -d output ]; then cp -r output public/; fi
-        touch public/.nojekyll
-        du -sh public
+      run: bash build.sh
 
     - name: Setup Pages
       uses: actions/configure-pages@v5

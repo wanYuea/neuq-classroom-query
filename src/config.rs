@@ -12,6 +12,16 @@ pub struct AppConfig {
     pub password: String,
     /// 教务系统基础 URL
     pub base_url: String,
+    /// 是否先登录 WebVPN 门户（校外访问教务系统时开启）
+    pub vpn_enabled: bool,
+    /// WebVPN 门户地址（协议+主机，如 https://vpn.neuq.edu.cn）
+    pub vpn_base_url: String,
+    /// WebVPN 门户用户名（缺省回退到教务用户名）
+    pub vpn_username: String,
+    /// WebVPN 门户密码（缺省回退到教务密码）
+    pub vpn_password: String,
+    /// WebVPN 门户认证方式：cas（统一认证）或 local（门户本地账号），默认 cas
+    pub vpn_auth_method: String,
     /// 请求超时时间
     pub request_timeout: Duration,
     /// 请求间隔时间
@@ -36,6 +46,11 @@ impl std::fmt::Debug for AppConfig {
             .field("username", &self.username)
             .field("password", &"[REDACTED]")
             .field("base_url", &self.base_url)
+            .field("vpn_enabled", &self.vpn_enabled)
+            .field("vpn_base_url", &self.vpn_base_url)
+            .field("vpn_username", &self.vpn_username)
+            .field("vpn_password", &"[REDACTED]")
+            .field("vpn_auth_method", &self.vpn_auth_method)
             .field("request_timeout", &self.request_timeout)
             .field("request_delay", &self.request_delay)
             .field("total_days", &self.total_days)
@@ -63,7 +78,34 @@ impl AppConfig {
         })?;
 
         let base_url = std::env::var("NEUQ_JWXT_BASE_URL")
-            .unwrap_or_else(|_| "http://jwxt.neuq.edu.cn/eams/".to_string());
+            .unwrap_or_else(|_| "https://vpn.neuq.edu.cn/http/77726476706e69737468656265737421fae05988693e6d456f468ca88d1b203b/eams/".to_string());
+
+        // 是否启用 WebVPN 门户登录：可显式配置，未配置时根据 base_url 是否指向 VPN 自动判断
+        let vpn_enabled = std::env::var("NEUQ_VPN_ENABLED")
+            .map(|v| v == "true" || v == "1")
+            .unwrap_or_else(|_| base_url.contains("vpn."));
+
+        // 门户协议+主机，可显式配置，缺省从 base_url 推导
+        let vpn_base_url = std::env::var("NEUQ_VPN_BASE_URL").unwrap_or_else(|_| {
+            reqwest::Url::parse(&base_url)
+                .ok()
+                .filter(|u| u.host_str().is_some())
+                .map(|u| {
+                    format!(
+                        "{}://{}{}",
+                        u.scheme(),
+                        u.host_str().unwrap_or(""),
+                        u.port().map(|p| format!(":{}", p)).unwrap_or_default()
+                    )
+                })
+                .unwrap_or_default()
+        });
+
+        let vpn_username = std::env::var("NEUQ_VPN_USERNAME").unwrap_or_else(|_| username.clone());
+        let vpn_password = std::env::var("NEUQ_VPN_PASSWORD").unwrap_or_else(|_| password.clone());
+        let vpn_auth_method = std::env::var("NEUQ_VPN_AUTH_METHOD")
+            .unwrap_or_else(|_| "cas".to_string())
+            .to_ascii_lowercase();
 
         let request_timeout_secs: u64 = std::env::var("REQUEST_TIMEOUT_SECS")
             .unwrap_or_else(|_| "45".to_string())
@@ -114,6 +156,11 @@ impl AppConfig {
             username,
             password,
             base_url,
+            vpn_enabled,
+            vpn_base_url,
+            vpn_username,
+            vpn_password,
+            vpn_auth_method,
             request_timeout: Duration::from_secs(request_timeout_secs),
             request_delay: Duration::from_millis(request_delay_ms),
             total_days,
