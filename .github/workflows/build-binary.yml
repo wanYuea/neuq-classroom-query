@@ -1,0 +1,46 @@
+name: Build Linux Binary
+
+# 用途：在云端编译 Linux x86_64 二进制并发布到 Release，
+#       供 2GiB 小内存服务器免编译部署（服务器上直接下载运行即可）。
+# 兼容性：在 AlmaLinux 9（glibc 2.34）容器内编译，
+#       可运行于 Alibaba Cloud Linux 3 / RHEL 9 / Ubuntu 22.04+ 等 glibc>=2.34 的系统。
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/build-binary.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build inside AlmaLinux 9 container (glibc 2.34)
+        run: |
+          docker run --rm -v "$PWD":/src -w /src almalinux:9 bash -lc '
+            set -e
+            dnf install -y -q gcc gcc-c++ make openssl-devel pkgconfig curl perl
+            curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
+            . "$HOME/.cargo/env"
+            cargo build --profile ci
+            cp target/ci/neuq-classroom-query /src/neuq-classroom-query-linux-x86_64
+          '
+
+      - name: Publish to Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x neuq-classroom-query-linux-x86_64
+          ls -lh neuq-classroom-query-linux-x86_64
+          gh release create prebuilt-linux-x64 \
+            --title "Linux x86_64 预编译二进制" \
+            --notes "GitHub Actions 自动构建（AlmaLinux 9 / glibc 2.34）。用于境内小内存服务器免编译部署：下载后 chmod +x 即可运行。" \
+            --target "${GITHUB_SHA}" 2>/dev/null || true
+          gh release upload prebuilt-linux-x64 neuq-classroom-query-linux-x86_64 --clobber
+          echo "下载地址：https://github.com/${GITHUB_REPOSITORY}/releases/download/prebuilt-linux-x64/neuq-classroom-query-linux-x86_64"
