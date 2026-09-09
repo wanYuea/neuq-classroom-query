@@ -39,7 +39,10 @@ if [ -d "$REPO_DIR/.git" ]; then
 fi
 
 echo "=== 编译 ==="
-cargo build --manifest-path "$REPO_DIR/Cargo.toml" --profile ci --target-dir "$WORK_DIR/target"
+# -j 2 限制并行：2GiB 小内存机器上全并行编译会 OOM（SIGKILL），
+# 内存富余的机器可设 CARGO_JOBS 提高（如 CARGO_JOBS=4 bash run.sh）
+JOBS="${CARGO_JOBS:-2}"
+cargo build --manifest-path "$REPO_DIR/Cargo.toml" --profile ci --target-dir "$WORK_DIR/target" -j "$JOBS"
 
 echo "=== 抓取（WebVPN CAS/SSO）==="
 # 程序需在仓库目录运行（assets/output 相对路径），环境变量继承自 .env
