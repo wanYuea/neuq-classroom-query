@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use tokio::fs;
-use tokio::sync::Semaphore;
 
 use crate::client::HttpClient;
 use crate::config::{AppConfig, TIME_SLOTS};
@@ -25,41 +24,32 @@ impl Fetcher {
     pub async fn fetch_all(&self) -> Result<()> {
         tracing::info!("--- 数据抓取开始 ---");
 
-        // 为每天创建独立客户端并并行抓取；
-        // 全局并发闸限制同时进行的空闲教室查询数，避免对教务系统造成瞬时压力
-        let gate = Arc::new(Semaphore::new(2));
+        // 为每天创建独立客户端并并行抓取
         let mut handles = Vec::new();
 
         for day_offset in 0..self.config.total_days {
             let config = Arc::clone(&self.config);
-            let gate = Arc::clone(&gate);
 
             let handle = tokio::spawn(async move {
                 // 每个任务创建独立的客户端（独立 session）
                 let client = HttpClient::new(Arc::clone(&config))?;
 
-                // 校外场景：先登录 WebVPN 门户，否则重写地址会被重定向到门户登录页
-                if config.vpn_enabled {
-                    with_retry(
-                        &config.retry_config,
-                        || async { client.login_portal().await },
-                        &format!("Day {} WebVPN 门户登录", day_offset),
-                    )
-                    .await?;
-                }
-
-                // 独立登录教务系统（VPN+CAS 场景走统一认证 SSO，否则走传统账号密码登录）
+                // 独立登录
                 with_retry(
                     &config.retry_config,
-                    || async { client.login_eams().await },
-                    &format!("Day {} 教务登录", day_offset),
+                    || async {
+                        client
+                            .login(&config.username, &config.password)
+                            .await
+                    },
+                    &format!("Day {} 登录", day_offset),
                 )
                 .await?;
 
                 tracing::info!("Day {} 登录成功，开始抓取", day_offset);
 
                 // 串行抓取该天的所有时段（同一 session 内必须串行）
-                fetch_day_data(client, config, gate, day_offset).await
+                fetch_day_data(client, config, day_offset).await
             });
 
             handles.push(handle);
@@ -89,19 +79,12 @@ impl Fetcher {
 
 /// 抓取单个时段并保存结果，返回是否获取到数据
 async fn fetch_and_save_slot(
-    gate: &Semaphore,
     client: &HttpClient,
     day_offset: u8,
     date_str: &str,
     slot: &crate::config::TimeSlot,
     output_dir: &std::path::Path,
 ) -> Result<bool> {
-    // 限制并发查询数，缓解“请不要过快点击”类风控与瞬时 500
-    let _permit = gate
-        .acquire()
-        .await
-        .map_err(|_| crate::error::AppError::Other("并发闸关闭".to_string()))?;
-
     let classrooms = client
         .search_free_classrooms(date_str, slot.begin, slot.end)
         .await?;
@@ -133,7 +116,6 @@ async fn fetch_and_save_slot(
 async fn fetch_day_data(
     client: HttpClient,
     config: Arc<AppConfig>,
-    gate: Arc<Semaphore>,
     day_offset: u8,
 ) -> Result<()> {
     let date_str = get_beijing_date_string(day_offset as i64);
@@ -149,7 +131,7 @@ async fn fetch_day_data(
 
         match with_retry(
             &config.retry_config,
-            || async { fetch_and_save_slot(&gate, &client, day_offset, &date_str, slot, &output_dir).await },
+            || async { fetch_and_save_slot(&client, day_offset, &date_str, slot, &output_dir).await },
             &format!("Day {} 时段 {}-{}", day_offset, slot.begin, slot.end),
         )
         .await
@@ -181,7 +163,7 @@ async fn fetch_day_data(
 
             match with_retry(
                 &config.retry_config,
-                || async { fetch_and_save_slot(&gate, &client, day_offset, &date_str, slot, &output_dir).await },
+                || async { fetch_and_save_slot(&client, day_offset, &date_str, slot, &output_dir).await },
                 &format!("Day {} 时段 {}-{} (重试{})", day_offset, slot.begin, slot.end, attempt),
             )
             .await

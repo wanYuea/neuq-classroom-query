@@ -1,6 +1,6 @@
 @font-face {
   font-family: "JetBrains Mono";
-  src: url("/assets/fonts/JetBrainsMono/JetBrainsMono-Light.woff2")
+  src: url("../fonts/JetBrainsMono/JetBrainsMono-Light.woff2")
     format("woff2");
   font-weight: normal;
   font-style: normal;
@@ -11,7 +11,7 @@
 }
 @font-face {
   font-family: "JetBrains Mono";
-  src: url("/assets/fonts/JetBrainsMono/JetBrainsMono-LightItalic.woff2")
+  src: url("../fonts/JetBrainsMono/JetBrainsMono-LightItalic.woff2")
     format("woff2");
   font-weight: normal;
   font-style: italic;
@@ -22,7 +22,7 @@
 }
 @font-face {
   font-family: "JetBrains Mono";
-  src: url("/assets/fonts/JetBrainsMono/JetBrainsMono-ExtraBold.woff2")
+  src: url("../fonts/JetBrainsMono/JetBrainsMono-ExtraBold.woff2")
     format("woff2");
   font-weight: bold;
   font-style: normal;
@@ -33,7 +33,7 @@
 }
 @font-face {
   font-family: "JetBrains Mono";
-  src: url("/assets/fonts/JetBrainsMono/JetBrainsMono-ExtraBoldItalic.woff2")
+  src: url("../fonts/JetBrainsMono/JetBrainsMono-ExtraBoldItalic.woff2")
     format("woff2");
   font-weight: bold;
   font-style: italic;
@@ -44,7 +44,7 @@
 }
 @font-face {
   font-family: "Maple Mono";
-  src: url("/assets/fonts/MapleMono/MapleMono[wght].woff2") format("woff2");
+  src: url("../fonts/MapleMono/MapleMono[wght].woff2") format("woff2");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -54,7 +54,7 @@
 }
 @font-face {
   font-family: "Maple Mono";
-  src: url("/assets/fonts/MapleMono/MapleMono[wght].woff2") format("woff2");
+  src: url("../fonts/MapleMono/MapleMono[wght].woff2") format("woff2");
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -64,7 +64,7 @@
 }
 @font-face {
   font-family: "Maple Mono";
-  src: url("/assets/fonts/MapleMono/MapleMono-Italic[wght].woff2")
+  src: url("../fonts/MapleMono/MapleMono-Italic[wght].woff2")
     format("woff2");
   font-weight: 300;
   font-style: italic;
@@ -75,7 +75,7 @@
 }
 @font-face {
   font-family: "Maple Mono";
-  src: url("/assets/fonts/MapleMono/MapleMono-Italic[wght].woff2")
+  src: url("../fonts/MapleMono/MapleMono-Italic[wght].woff2")
     format("woff2");
   font-weight: 900;
   font-style: italic;
@@ -87,7 +87,7 @@
 
 @font-face {
   font-family: "New Computer Modern";
-  src: url("/assets/fonts/NewComputerModern/NewCM10-Regular.woff2")
+  src: url("../fonts/NewComputerModern/NewCM10-Regular.woff2")
     format("woff2");
   font-weight: normal;
   font-style: normal;
@@ -95,14 +95,14 @@
 }
 @font-face {
   font-family: "New Computer Modern";
-  src: url("/assets/fonts/NewComputerModern/NewCM10-Bold.woff2") format("woff2");
+  src: url("../fonts/NewComputerModern/NewCM10-Bold.woff2") format("woff2");
   font-weight: bold;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "New Computer Modern";
-  src: url("/assets/fonts/NewComputerModern/NewCM10-Italic.woff2")
+  src: url("../fonts/NewComputerModern/NewCM10-Italic.woff2")
     format("woff2");
   font-weight: normal;
   font-style: italic;
@@ -110,7 +110,7 @@
 }
 @font-face {
   font-family: "New Computer Modern";
-  src: url("/assets/fonts/NewComputerModern/NewCM10-BoldItalic.woff2")
+  src: url("../fonts/NewComputerModern/NewCM10-BoldItalic.woff2")
     format("woff2");
   font-weight: bold;
   font-style: italic;
@@ -119,19 +119,19 @@
 
 @font-face {
   font-family: "Source Han Serif";
-  src: url("/assets/fonts/SourceHanSerif/SourceHanSerifSC-VF.otf.woff2")
+  src: url("../fonts/SourceHanSerif/SourceHanSerifSC-VF.otf.woff2")
     format("woff2");
   font-display: swap;
 }
 
 @font-face {
   font-family: "LXGW Wenkai";
-  src: url("/assets/fonts/LXGWWenkai/LXGWWenKai-Regular.woff2") format("woff2");
+  src: url("../fonts/LXGWWenkai/LXGWWenKai-Regular.woff2") format("woff2");
   font-display: swap;
 }
 
 @font-face {
   font-family: "Swell Braille";
-  src: url("/assets/fonts/SwellBraille/swell-braille.woff2") format("woff2");
+  src: url("../fonts/SwellBraille/swell-braille.woff2") format("woff2");
   font-display: swap;
 }

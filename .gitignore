@@ -1,5 +1,7 @@
 # 本地测试需要，暂不提交
 /output/
+/index.html
+/public/
 
 /node_modules
 /target

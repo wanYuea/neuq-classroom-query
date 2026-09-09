@@ -77,7 +77,7 @@ YOUR_NEUQ_PASSWORD=你的密码
 export YOUR_NEUQ_USERNAME="你的学号"
 export YOUR_NEUQ_PASSWORD="你的密码"
 
-export NEUQ_JWXT_BASE_URL="https://vpn.neuq.edu.cn/http/77726476706e69737468656265737421fae05988693e6d456f468ca88d1b203b/eams/"
+export NEUQ_JWXT_BASE_URL="http://jwxt.neuq.edu.cn/eams/"
 export REQUEST_TIMEOUT_SECS=45
 export REQUEST_DELAY_MS=2000
 export TOTAL_DAYS=7

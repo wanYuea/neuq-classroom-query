@@ -21,8 +21,6 @@ scraper = "0.21"
 # 加密
 sha1 = "0.10"
 hex = "0.4"
-aes = "0.8"
-base64 = "0.22"
 
 # 异步运行时
 tokio = { version = "1", features = ["full"] }

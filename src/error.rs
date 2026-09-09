@@ -38,10 +38,6 @@ pub enum AppError {
     #[error("登录失败: {reason}")]
     LoginFailed { reason: String },
 
-    /// WebVPN 门户登录失败
-    #[error("WebVPN 门户登录失败: {reason}")]
-    PortalLoginFailed { reason: String },
-
     /// 数据校验错误
     #[error("数据校验失败: {0}")]
     Validation(String),

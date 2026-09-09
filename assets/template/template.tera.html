@@ -27,10 +27,10 @@
         })();
     </script>
 
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 
-    <link rel="stylesheet" href="/assets/styles/main.css">
-    <link rel="stylesheet" href="/assets/styles/font.css">
+    <link rel="stylesheet" href="assets/styles/main.css">
+    <link rel="stylesheet" href="assets/styles/font.css">
 
     <style id="theme-style"></style>
 </head>
@@ -288,7 +288,7 @@
             // 预加载所有预设主题 TOML
             function preloadPresets() {
                 return Promise.all(PRESET_THEMES.map(function (name) {
-                    return fetch('/assets/themes/' + name + '.toml')
+                    return fetch('assets/themes/' + name + '.toml')
                         .then(function (res) { return res.text(); })
                         .then(function (text) { themeCache[name] = text; })
                         .catch(function () { });
@@ -641,7 +641,7 @@
 
         // 异步加载并注入 SVG icons
         (function () {
-            fetch('/assets/icons/icons.svg')
+            fetch('assets/icons/icons.svg')
                 .then(function (response) {
                     return response.text();
                 })
