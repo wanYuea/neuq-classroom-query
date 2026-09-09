@@ -2,6 +2,29 @@
 
 站点：https://neuq-classroom-query-2kb.pages.dev ｜ 仓库：https://github.com/wanYuea/neuq-classroom-query
 
+## 当前形态（2026-09-09 · 登录后直达查询）
+
+不做自动抓取、不需要任何服务器。站点是一个**引导页**（源码 `guide/index.html`），提供：
+
+1. 「直达 · 空闲教室查询」按钮 —— 打开教务的空闲教室查询页
+2. 「教务门户登录」按钮 —— WebVPN 统一身份认证登录
+
+**为何如此**：教务系统仅向境内开放且不对第三方页面开放跨域（CORS 实测无
+`Access-Control-Allow-Origin`），第三方网页无法"代读"数据；WebVPN 又封锁境外 IP，
+云端自动抓取不可行。因此改为「用户在自己浏览器里登录教务 → 在教务页面查询」。
+
+部署/修改引导页（需境内网络，无需服务器）：
+```bash
+cd guide
+# 编辑 index.html 后，用 wrangler 直传（需 CF token，权限 Pages:Edit）
+npx wrangler@3 pages deploy . --project-name neuq-classroom-query --branch main
+```
+
+---
+
+# 以下为已存档的自动抓取方案（当前未启用）
+
+
 ## 架构（最终形态）
 
 ```
