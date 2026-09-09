@@ -2,6 +2,31 @@
 
 本项目已改用 Cloudflare Pages 部署。仓库：`https://github.com/wanYuea/neuq-classroom-query`
 
+## 当前状态（2026-09-09）
+
+| 项 | 值 / 状态 |
+| --- | --- |
+| Cloudflare Pages 项目 | `neuq-classroom-query` |
+| 访问地址 | https://neuq-classroom-query-2kb.pages.dev |
+| 构建命令 / 输出目录 | `bash build.sh` / `public` ✅ 已配置 |
+| 加密变量 | `YOUR_NEUQ_USERNAME`、`YOUR_NEUQ_PASSWORD` ✅ 已写入 |
+| GitHub 仓库 Secrets | 同名两个 ✅ 已更新 |
+| GitHub Pages | 已启用（作为备用），定时构建已关闭 |
+| **Git 连接** | ❌ 未授权 —— Cloudflare Pages 的 GitHub App 未安装 |
+| **站点内容** | ❌ 暂无内容，见下方「HTTP 483」 |
+
+### 还差一步：授权 GitHub App
+
+当前项目是**直传模式**，Cloudflare 不会自动构建，站点永远不会自己更新。
+要让它每小时自动构建，需要：
+
+1. 打开 https://github.com/apps/cloudflare-pages 安装，只授权
+   `wanYuea/neuq-classroom-query` 这一个仓库
+2. 授权后把 Pages 项目改为 Git 连接型（构建配置不变），
+   再按下方「第三节」配 Deploy Hook + Cron Worker
+
+改完就能实现「学校恢复访问后自动恢复更新」。
+
 ## 一、连接仓库
 
 在 Cloudflare Dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**，
