@@ -3,10 +3,10 @@ name: Rust Classroom Query and Deploy Automation
 on:
   push:
     branches: [ main, master ]
-  schedule:
-    # GitHub Actions 的 cron 使用 UTC。此处为每小时的第 30 分触发，
-    # 避开整点高峰（GitHub 对定时任务有排队延迟）。
-    - cron: '30 * * * *'
+  # 定时构建已改由 Cloudflare Pages 承担（见 DEPLOY.md）。
+  # 教务系统目前对外返回 483，定时跑只会持续失败；恢复后取消下面三行注释即可重新启用。
+  # schedule:
+  #   - cron: '30 * * * *'
   workflow_dispatch:
     inputs:
       force_overwrite:
