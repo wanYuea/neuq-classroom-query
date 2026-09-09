@@ -12,8 +12,13 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 # ---------- 配置 ----------
-# 仓库目录（setup.sh 默认克隆到同目录 ../neuq-classroom-query）
-REPO_DIR="$(cd .. && pwd)/neuq-classroom-query"
+# 仓库根 = 本脚本所在 deploy-server/ 的上一级
+REPO_DIR="$(cd .. && pwd)"
+if [ ! -f "$REPO_DIR/Cargo.toml" ]; then
+  echo "✖ 找不到仓库源码（$REPO_DIR/Cargo.toml 不存在）" >&2
+  echo "  请确认脚本位于仓库的 deploy-server/ 目录内（先 git clone 整个仓库）" >&2
+  exit 1
+fi
 ENV_FILE="$(pwd)/.env"
 WORK_DIR="$(pwd)/work"          # 编译与产物目录（避免污染仓库）
 CLOUDFLARE_PROJECT="neuq-classroom-query"

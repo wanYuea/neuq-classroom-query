@@ -13,8 +13,20 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-REPO_DIR="$(cd .. && pwd)/neuq-classroom-query"
+# 仓库根 = 本脚本所在 deploy-server/ 的上一级（标准布局：clone 整个仓库后进入 deploy-server）
+REPO_DIR="$(cd .. && pwd)"
+if [ ! -f "$REPO_DIR/Cargo.toml" ]; then
+  echo "✖ 找不到仓库源码（$REPO_DIR/Cargo.toml 不存在）。" >&2
+  echo "  请先完整克隆仓库再运行本脚本：" >&2
+  echo "    cd ~ && git clone https://github.com/wanYuea/neuq-classroom-query.git" >&2
+  echo "    cd ~/neuq-classroom-query/deploy-server && bash setup.sh" >&2
+  exit 1
+fi
 ENV_FILE="$(pwd)/.env"
+
+# rustup/cargo 走国内镜像（服务器在境内，直连官方源常超时）
+export RUSTUP_DIST_SERVER="${RUSTUP_DIST_SERVER:-https://rsproxy.cn}"
+export RUSTUP_UPDATE_ROOT="${RUSTUP_UPDATE_ROOT:-https://rsproxy.cn/rustup}"
 
 # ---- 探测发行版，选择包管理器 ----
 if command -v dnf >/dev/null 2>&1; then
@@ -51,7 +63,7 @@ fi
 . "$HOME/.cargo/env"
 
 echo "== 3/5 安装 Node + wrangler =="
-# 用官方 Node LTS 二进制（不依赖发行版包管理器，Alibaba Cloud Linux 也能用）
+# 用官方 Node LTS 二进制（走国内 npmmirror 镜像，不依赖发行版包管理器）
 if ! command -v node >/dev/null 2>&1; then
   NODE_VER="v20.18.0"
   ARCH="$(uname -m)"
@@ -61,16 +73,17 @@ if ! command -v node >/dev/null 2>&1; then
     *)       echo "✖ 未知架构 $ARCH，请手动安装 Node 18+"; exit 1 ;;
   esac
   mkdir -p "$HOME/.local/node-$NODE_VER"
-  curl -fsSL "https://nodejs.org/dist/${NODE_VER}/node-${NODE_VER}-linux-${NODE_ARCH}.tar.xz" \
+  curl -fsSL "https://cdn.npmmirror.com/binaries/node/${NODE_VER}/node-${NODE_VER}-linux-${NODE_ARCH}.tar.xz" \
     | tar -xJ -C "$HOME/.local/node-$NODE_VER" --strip-components=1
-  ln -sf "$HOME/.local/node-$NODE-ver/bin/node" /usr/local/bin/node 2>/dev/null || true
-  ln -sf "$HOME/.local/node-$NODE-ver/bin/npm"  /usr/local/bin/npm  2>/dev/null || true
+  ln -sf "$HOME/.local/node-${NODE_VER}/bin/node" /usr/local/bin/node 2>/dev/null || true
+  ln -sf "$HOME/.local/node-${NODE_VER}/bin/npm"  /usr/local/bin/npm  2>/dev/null || true
   echo "Node ${NODE_VER} 解压到 $HOME/.local/node-${NODE_VER}"
 fi
-# 确保后续命令能用 node/npm
+# 确保后续命令能用 node/npm（含 PATH 找不到时的兜底）
 if ! command -v node >/dev/null 2>&1; then
   export PATH="$HOME/.local/node-${NODE_VER}/bin:$PATH"
 fi
+npm config set registry https://registry.npmmirror.com >/dev/null 2>&1 || true
 echo "node: $(command -v node) | 版本: $(node -v 2>/dev/null)"
 if ! command -v wrangler >/dev/null 2>&1; then
   npm install -g wrangler >/dev/null 2>&1 || true
@@ -78,12 +91,8 @@ fi
 # run.sh 已自带 npx wrangler 兜底，这里仅尝试全局装一次
 echo "wrangler 全局: $(command -v wrangler || echo '将使用 npx wrangler')"
 
-echo "== 4/5 克隆/更新仓库 =="
-if [ ! -d "$REPO_DIR/.git" ]; then
-  git clone https://github.com/wanYuea/neuq-classroom-query.git "$REPO_DIR"
-else
-  git -C "$REPO_DIR" pull --ff-only -q || true
-fi
+echo "== 4/5 更新仓库代码 =="
+git -C "$REPO_DIR" pull --ff-only -q 2>/dev/null && echo "  ✔ 已同步最新代码" || echo "  (跳过：非 git clone 或网络异常，使用当前代码)"
 
 echo "== 5/5 交互式填写配置 =="
 NEED_WRITE=0
