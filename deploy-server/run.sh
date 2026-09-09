@@ -38,25 +38,42 @@ if [ -d "$REPO_DIR/.git" ]; then
   git -C "$REPO_DIR" pull --ff-only -q || echo "警告：代码更新失败，用本地版本继续" >&2
 fi
 
-echo "=== 编译 ==="
-# -j 限制 crate 并行；小内存机器再把 codegen-units 从 256 降到 16（256 是 OOM 主因）。
-# 内存富余可用 CARGO_JOBS / CARGO_PROFILE_CI_CODEGEN_UNITS 覆盖。
-JOBS="${CARGO_JOBS:-2}"
-if [ -z "${CARGO_PROFILE_CI_CODEGEN_UNITS:-}" ]; then
-  MEM_KB="$(awk '/MemTotal/ {print $2}' /proc/meminfo 2>/dev/null || echo 8000000)"
-  if [ "${MEM_KB:-8000000}" -lt 3000000 ]; then
-    export CARGO_PROFILE_CI_CODEGEN_UNITS=16
-    echo "  小内存机器(<3GiB)：codegen-units 降为 16，防止编译 OOM"
+echo "=== 准备可执行文件 ==="
+# 优先使用预编译二进制（放到 deploy-server/neuq-classroom-query 即可跳过编译，
+# 适合 2GiB 小内存服务器：云端 Release 下载后 chmod +x 放这里）
+PREBUILT="$(pwd)/neuq-classroom-query"
+BIN="$WORK_DIR/neuq-classroom-query"
+mkdir -p "$WORK_DIR"
+if [ -x "$PREBUILT" ]; then
+  cp -f "$PREBUILT" "$BIN"
+  chmod +x "$BIN"
+  echo "  使用预编译二进制（跳过编译）"
+elif [ ! -x "$BIN" ]; then
+  echo "=== 编译 ==="
+  # -j 限制 crate 并行；小内存机器再把 codegen-units 从 256 降到 16（256 是 OOM 主因）。
+  # 内存富余可用 CARGO_JOBS / CARGO_PROFILE_CI_CODEGEN_UNITS 覆盖。
+  JOBS="${CARGO_JOBS:-2}"
+  if [ -z "${CARGO_PROFILE_CI_CODEGEN_UNITS:-}" ]; then
+    MEM_KB="$(awk '/MemTotal/ {print $2}' /proc/meminfo 2>/dev/null || echo 8000000)"
+    if [ "${MEM_KB:-8000000}" -lt 3000000 ]; then
+      export CARGO_PROFILE_CI_CODEGEN_UNITS=16
+      echo "  小内存机器(<3GiB)：codegen-units 降为 16，防止编译 OOM"
+    fi
   fi
+  cargo build --manifest-path "$REPO_DIR/Cargo.toml" --profile ci --target-dir "$WORK_DIR/target" -j "$JOBS"
+  cp -f "$WORK_DIR/target/ci/neuq-classroom-query" "$BIN" 2>/dev/null || true
+else
+  echo "  复用已编译产物"
 fi
-cargo build --manifest-path "$REPO_DIR/Cargo.toml" --profile ci --target-dir "$WORK_DIR/target" -j "$JOBS"
 
 echo "=== 抓取（WebVPN CAS/SSO）==="
 # 程序需在仓库目录运行（assets/output 相对路径），环境变量继承自 .env
+set +e
 ( cd "$REPO_DIR" && \
   ASSETS_DIR=./assets OUTPUT_DIR=./output \
-  "$WORK_DIR/target/ci/neuq-classroom-query" deploy )
+  "$BIN" deploy )
 RC=$?
+set -e
 if [ $RC -ne 0 ]; then
   echo "✖ 抓取失败（exit=$RC），保留线上已有数据，跳过上传" >&2
   exit 1
