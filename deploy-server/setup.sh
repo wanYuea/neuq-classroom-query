@@ -85,14 +85,25 @@ else
   git -C "$REPO_DIR" pull --ff-only -q || true
 fi
 
-echo "== 5/5 写入 .env =="
-if [ -f "$ENV_FILE" ]; then
-  echo "检测到已有 .env，跳过（如需修改请编辑 $ENV_FILE）"
+echo "== 5/5 交互式填写配置 =="
+NEED_WRITE=0
+if [ ! -f "$ENV_FILE" ]; then
+  NEED_WRITE=1
 else
+  echo "检测到已有 .env："
+  read -r -p "  覆盖重填？[y/N] " OV
+  [ "$OV" = "y" ] && NEED_WRITE=1
+fi
+
+if [ "$NEED_WRITE" = "1" ]; then
+  read -r -p "  ① 学号: " UN
+  read -r -s -p "  ② 统一认证密码(输入不回显): " UP
+  echo ""
+  read -r -p "  ③ Cloudflare API Token(权限 Pages:Edit): " CT
   cat > "$ENV_FILE" <<EOF
 # ---- 教务/统一认证账号 ----
-YOUR_NEUQ_USERNAME=你的学号
-YOUR_NEUQ_PASSWORD=你的统一认证密码
+YOUR_NEUQ_USERNAME=${UN}
+YOUR_NEUQ_PASSWORD=${UP}
 
 # ---- 抓取走 WebVPN（必需）----
 NEUQ_JWXT_BASE_URL=https://vpn.neuq.edu.cn/http/77726476706e69737468656265737421fae05988693e6d456f468ca88d1b203b/eams/
@@ -101,13 +112,12 @@ NEUQ_VPN_BASE_URL=https://vpn.neuq.edu.cn
 NEUQ_VPN_AUTH_METHOD=cas
 TOTAL_DAYS=7
 
-# ---- Cloudflare 直传（到 dash.cloudflare.com 创建 Token，权限：Pages:Edit）----
-CLOUDFLARE_API_TOKEN=你的CF令牌
+# ---- Cloudflare 直传 ----
+CLOUDFLARE_API_TOKEN=${CT}
 CLOUDFLARE_ACCOUNT_ID=99d2c0563683f2295fb65285cd3c2e68
 EOF
-  echo "已生成模板，请编辑：$ENV_FILE"
-  echo "   填入学号/密码/CF 令牌后，再执行：bash run.sh"
-  exit 0
+  chmod 600 "$ENV_FILE"
+  echo "  ✔ 已写入 $ENV_FILE（权限 600）"
 fi
 
 echo "== 安装 crontab（每天 07:30/12:30/18:30，Asia/Shanghai）=="
@@ -117,7 +127,9 @@ echo "已安装。查看：crontab -l"
 
 echo ""
 echo "✔ 部署就绪！"
-echo "  1) 编辑 $ENV_FILE 填入真实账号与令牌"
-echo "  2) 手动验证：bash run.sh"
-echo "  3) 之后每天 07:30 / 12:30 / 18:30 自动抓取并更新 https://neuq-classroom-query-2kb.pages.dev"
+echo "  定时：每天 07:30 / 12:30 / 18:30 自动抓取并更新 https://neuq-classroom-query-2kb.pages.dev"
 echo "  日志：$(pwd)/run.log"
+read -r -p "  现在就手动跑一次验证？[Y/n] " GO
+if [ "$GO" != "n" ]; then
+  bash "$(pwd)/run.sh"
+fi
