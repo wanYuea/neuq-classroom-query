@@ -11,16 +11,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  refresh:
+  fetch:
     runs-on: ubuntu-latest
     container: almalinux:8
     timeout-minutes: 25
     steps:
-      - name: Install runtime deps (git + node for wrangler)
-        run: |
-          dnf install -y git nodejs >/dev/null
-          node -v
-
       - uses: actions/checkout@v4
 
       - name: Download prebuilt binary
@@ -68,17 +63,27 @@ jobs:
           touch public/.nojekyll
           du -sh public
 
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: public
+          retention-days: 1
+
+  deploy:
+    needs: fetch
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: public
+
       - name: Deploy to Cloudflare Pages
-        shell: bash {0}
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          set -o pipefail
-          node -v
-          npm install --no-save --no-audit --no-fund wrangler@3 2>&1 | tail -2
-          node node_modules/wrangler/bin/wrangler.js --version
-          node node_modules/wrangler/bin/wrangler.js pages deploy public --project-name=neuq-classroom-query --branch=main 2>&1 | tail -40
-          rc=$?
-          echo "wrangler exit=$rc"
-          exit $rc
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy public --project-name=neuq-classroom-query --branch=main
