@@ -1,0 +1,60 @@
+---
+name: Refresh & Publish
+
+on:
+  schedule:
+    - cron: '20 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: refresh-publish
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    container: almalinux:8
+    timeout-minutes: 25
+    steps:
+      - name: Install runtime deps (git + node for wrangler)
+        run: |
+          dnf install -y git nodejs >/dev/null
+          node -v
+
+      - uses: actions/checkout@v4
+
+      - name: Download prebuilt binary
+        run: |
+          curl -sSL --retry 3 -o ncq.gz \
+            "https://github.com/${{ github.repository }}/releases/download/prebuilt-linux-x64/neuq-classroom-query-linux-x86_64-al8.gz"
+          gunzip -c ncq.gz > ncq && chmod +x ncq
+          ldd ./ncq | grep -i "not found" && { echo "缺依赖"; exit 1; } || echo "deps OK"
+
+      - name: Fetch via WebVPN CAS + generate
+        id: fetch
+        env:
+          YOUR_NEUQ_USERNAME: ${{ secrets.NEUQ_USERNAME }}
+          YOUR_NEUQ_PASSWORD: ${{ secrets.NEUQ_PASSWORD }}
+          NEUQ_JWXT_BASE_URL: 'https://vpn.neuq.edu.cn/http/77726476706e69737468656265737421fae05988693e6d456f468ca88d1b203b/eams/'
+          NEUQ_VPN_ENABLED: 'true'
+          NEUQ_VPN_BASE_URL: 'https://vpn.neuq.edu.cn'
+          NEUQ_VPN_AUTH_METHOD: 'cas'
+          TOTAL_DAYS: '7'
+          ASSETS_DIR: './assets'
+          OUTPUT_DIR: './output'
+        run: ./ncq deploy
+
+      - name: Assemble public/
+        run: |
+          rm -rf public && mkdir -p public
+          cp index.html public/
+          cp -r assets public/
+          cp -r output public/
+          touch public/.nojekyll
+          du -sh public
+
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx --yes wrangler@3 pages deploy public --project-name=neuq-classroom-query --branch=main
