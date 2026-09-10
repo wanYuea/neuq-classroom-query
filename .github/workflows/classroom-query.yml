@@ -1,0 +1,87 @@
+name: Rust Classroom Query and Deploy Automation
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    inputs:
+      force_overwrite:
+        description: 'Force overwrite existing data'
+        required: false
+        type: boolean
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: cargo-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            cargo-
+
+      - name: Install mold linker
+        run: sudo apt-get install -y mold
+
+      - name: Build
+        env:
+          RUSTFLAGS: "-C linker=clang -C link-arg=-fuse-ld=mold"
+        run: cargo build --profile ci
+
+      - name: Fetch via WebVPN CAS/SSO, process and generate
+        env:
+          YOUR_NEUQ_USERNAME: ${{ secrets.YOUR_NEUQ_USERNAME }}
+          YOUR_NEUQ_PASSWORD: ${{ secrets.YOUR_NEUQ_PASSWORD }}
+          NEUQ_JWXT_BASE_URL: "https://vpn.neuq.edu.cn/http/77726476706e69737468656265737421fae05988693e6d456f468ca88d1b203b/eams/"
+          NEUQ_VPN_ENABLED: "true"
+          NEUQ_VPN_BASE_URL: "https://vpn.neuq.edu.cn"
+          NEUQ_VPN_AUTH_METHOD: "cas"
+          ASSETS_DIR: ./assets
+          OUTPUT_DIR: ./output
+          TOTAL_DAYS: "7"
+          MAX_RETRIES: "8"
+          FORCE_OVERWRITE: ${{ inputs.force_overwrite || 'false' }}
+        run: ./target/ci/neuq-classroom-query deploy
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
