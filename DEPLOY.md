@@ -2,54 +2,56 @@
 
 站点：<https://neuq-classroom-query-2kb.pages.dev> ｜ 仓库：<https://github.com/wanYuea/neuq-classroom-query>
 
-## 当前形态（2026-09-09 · 登录后直达查询）
+## 当前形态（2026-09-10 · GitHub Actions 全自动）
 
-不做自动抓取、不需要任何服务器。站点是一个**引导页**（源码 `guide/index.html`），提供：
-
-1. 「直达 · 空闲教室查询」按钮 —— 打开教务的空闲教室查询页
-2. 「教务门户登录」按钮 —— WebVPN 统一身份认证登录
-
-**为何如此**：教务系统仅........内.....且....  
-`Access-Control-Allow-Origin`），第.方..................................................网页无法"代读"数据；WebVPN 又封锁境外 IP，  
-云端自动抓取不可行。因此改为「用户在自己浏览器里登录教务 → 在教务页面查询」。
-
-部署/修改引导页（需境内网络，无需服务器）：
-
-```bash
-cd guide
-# 编辑 index.html 后，用 wrangler 直传（需 CF token，权限 Pages:Edit）
-npx wrangler@3 pages deploy . --project-name neuq-classroom-query --branch main
 ```
+GitHub Actions（cron 每小时 + 手动触发）
+  ├─ job fetch（almalinux:8 容器）
+  │    ├─ 下载 Release 预编译二进制 neuq-classroom-query-linux-x86_64-al8.gz
+  │    ├─ WebVPN 门户 CAS 统一认证登录 → 教务系统 eams SSO 放行
+  │    ├─ 抓取 7 天 × 12 时段教室数据（任务级 3 次重试 + 退避）
+  │    ├─ 组装 public/（index.html + assets + output + .nojekyll）
+  │    └─ 上传 artifact
+  └─ job deploy（ubuntu-latest）
+       └─ cloudflare/wrangler-action 直传 Cloudflare Pages（--branch main）
+```
+
+### 配置步骤
+
+1. **Cloudflare Pages**：创建项目（如 `neuq-classroom-query`），保持直传模式，**关闭 Git 自动构建**。
+2. **GitHub Secrets**（Settings → Secrets and variables → Actions）：
+
+   | Secret | 说明 |
+   |---|---|
+   | `NEUQ_USERNAME` | 统一身份认证学号 |
+   | `NEUQ_PASSWORD` | 统一身份认证密码 |
+   | `CLOUDFLARE_API_TOKEN` | Cloudflare API 令牌（Pages: Edit） |
+   | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare 账户 ID |
+
+3. 手动验证：Actions → Refresh & Publish → Run workflow；之后每小时 `cron: '20 * * * *'` 自动运行。
+
+### 为什么这样设计（踩坑记录）
+
+- 教务系统 `jwxt.neuq.edu.cn` 对外网直接返回 483 → 必须走 WebVPN（`vpn.neuq.edu.cn`）。
+- **网络封锁实测（2026-09-10）**：
+  - 阿里云机房 IP 访问 WebVPN → 403（被封，云服务器方案不可行）；
+  - GitHub Actions 的 Azure 出口 IP（如 `4.242.45.25`）→ 302 正常，**且 CAS 登录、数据抓取均成功** —— 这是本方案成立的前提。
+  - 早期版本误判"所有境外/机房 IP 均被封"并因此转向境内服务器方案；后经逐项探测推翻。若日后学校收紧策略，运行 `.github/workflows/vpn-reachability-test.yml` 即可快速验证。
+- 预编译二进制为 AlmaLinux 8 构建（glibc 2.28 + openssl 1.1.1）→ 抓取 job 必须跑在 `almalinux:8` 容器里。
+- AlmaLinux 8 容器内 `dnf install nodejs` 只提供 Node 10，而 wrangler 要求 ≥16.13；旧版 npx 还会吞掉退出码（表现为静默 exit 0 无任何输出）→ 因此部署 job 单独放在 `ubuntu-latest` 上跑官方 `cloudflare/wrangler-action@v3`。
+- 教务系统偶发瞬时 500 → 抓取步骤内置任务级 3 次重试（间隔递增），单次失败不会导致整条流水线报废。
+- Cloudflare Pages 项目已禁用 Git 自动构建，部署全部为直传（ad_hoc）；抓取失败时**不覆盖**线上已有数据。
+
+### 网络策略变化时的自检
+
+1. 运行 `.github/workflows/vpn-reachability-test.yml`（手动触发），观察 Actions 出口 IP 对 `vpn.neuq.edu.cn` 的状态码：302 = 正常，403 = 被封。
+2. 若被封：改走下方"境内服务器方案"或在本机手动运行。
 
 ---
 
-# 以下为已存档的自动抓取方案（当前未启用）
+## 已归档的备选方案
 
-## 架构（最终形态）
-
-```
-[境内服务器/本机]                [境外静态托管]
-  cron 每天 07:30/12:30/18:30
-      │  bash deploy-server/run.sh
-      │    ├─ 编译 Rust 二进制
-      │    ├─ WebVPN 门户 CAS 统一认证登录（境内 IP 才能过）
-      │    ├─ eams SSO 放行 → 抓取 7 天 × 7 时段教室数据
-      │    └─ 组装 public/ → wrangler 直传
-      ▼
-  Cloudflare Pages（纯托管，已禁用 Git 自动构建）
-      ▼
-  https://neuq-classroom-query-2kb.pages.dev
-```
-
-**为什么这样设计**（踩坑总结）：
-
-- 教务系统 `jwxt.neuq.edu.cn` 对外网返回 483 → 必须走 WebVPN（`vpn.neuq.edu.cn`）。
-- WebVPN 门户对**境外 IP 直接 403**：GitHub Actions（美国 Azure）、Cloudflare 构建机（境外边缘）实测均被拒。  
-  只有**境内网络/服务器**能完成 CAS 登录。→ 抓取必须放在境内执行。
-- 因此境外只保留「静态托管」职责；Cloudflare Pages 项目已 **禁用 Git 自动构建**，  
-  数据一律由境内 `run.sh` 直传（抓取失败时**不覆盖**线上已有数据）。
-
-## 一、境内服务器部署（唯一生效路径）
+### 境内服务器方案（WebVPN 封锁数据中心 IP 时使用）
 
 在任意能访问 WebVPN 的境内 Linux 服务器/长期开机的机器上：
 
@@ -58,50 +60,20 @@ git clone https://github.com/wanYuea/neuq-classroom-query.git
 cd neuq-classroom-query/deploy-server
 bash setup.sh                 # 装依赖 + 引导写 .env + 装 crontab
 # 编辑 .env 填学号/统一认证密码/CF 令牌
-bash run.sh                   # 手动跑一次，验证抓取并直传
-crontab -l                    # 确认每天 07:30/12:30/18:30 已排程
-tail -f run.log               # 观察运行
+./run.sh                      # 抓取 + 直传 Cloudflare Pages
 ```
 
-`.env` 要点：`YOUR_NEUQ_USERNAME/PASSWORD` = 统一身份认证账号（学号+密码）；  
-`CLOUDFLARE_API_TOKEN` 在 <https://dash.cloudflare.com/profile/api-tokens> 创建（权限 `Cloudflare Pages: Edit`，  
-账号级）；`CLOUDFLARE_ACCOUNT_ID` = `99d2c0563683f2295fb65285cd3c2e68`。
+细节见 `deploy-server/README.md`。注意：2 GiB 小内存服务器编译需按 `run.sh` 内注释限制并行度，或直接使用 Release 预编译二进制。
 
-> 国内便宜方案：阿里云/腾讯云轻量应用服务器（新用户低至几十元/年）或学生机；  
-> 校园网内长期在线的设备也可以。
+### 引导页方案（无数据兜底）
 
-## 二、抓取流程说明（代码内置）
+`guide/index.html` 是一个静态引导页（直达教务查询 + WebVPN 登录入口），早期在自动抓取不可行时作为线上兜底页面。修改后可用 `npx wrangler@3 pages deploy guide --project-name neuq-classroom-query --branch main` 直传。
 
-`deploy` 子命令在 `NEUQ_VPN_ENABLED=true` 时自动执行：
+### 手动编译
 
-1. **WebVPN 门户登录**（`login_portal`）：伪造 fingerprint → CAS(金智 wisedu) 登录。
-   - CAS 密码加密：AES-128-CBC，key=页面下发的 `pwdDefaultEncryptSalt`(16B UTF-8)，  
-     iv=16 位随机串，明文前拼 64 位随机串，输出 Base64（算法见 `client.rs::cas_encrypt_password`）。
-2. **教务 eams SSO**（`login_eams_cas`）：访问 `homeExt.action`，同一会话经 SSO 自动放行（无需再输密码）。
-3. **抓取**：7 天各自独立会话并行；每天 7 个时段串行；`Semaphore(2)` 限并发，防教务风控。
-4. 每天结果落 `output/output-day-N/`，经清洗后生成 `index.html`。
+```shell
+cargo build --profile ci    # CI profile 跳过 LTO，编译更快，产物在 target/ci/
+./target/ci/neuq-classroom-query deploy
+```
 
-`build.sh` 同时保留「抓取失败 → 降级状态页」的容错（境外/异常时保证站点不 404）。
-
-## 三、环境变量
-
-| 变量                                               | 说明                                           |
-| ------------------------------------------------ | -------------------------------------------- |
-| `YOUR_NEUQ_USERNAME` / `YOUR_NEUQ_PASSWORD`      | 统一身份认证账号（学号/密码），必需                           |
-| `NEUQ_JWXT_BASE_URL`                             | eams 的 WebVPN 重写地址（默认已指向 vpn.neuq.edu.cn）    |
-| `NEUQ_VPN_ENABLED`                               | `true` 启用 WebVPN 门户登录（base_url 含 vpn. 时自动开启） |
-| `NEUQ_VPN_BASE_URL`                              | WebVPN 门户（默认 <https://vpn.neuq.edu.cn）>      |
-| `NEUQ_VPN_AUTH_METHOD`                           | `cas`（统一认证）或 `local`                         |
-| `NEUQ_VPN_USERNAME/PASSWORD`                     | 门户专用账号（缺省回退教务账号）                             |
-| `TOTAL_DAYS`                                     | 抓取天数，默认 7                                    |
-| `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` | 直传 Pages 用（见 deploy-server/.env）             |
-
-## 四、故障排查
-
-- **境外访问 VPN 403**：正常现象，WebVPN 有境外 IP 封锁，抓取必须在境内跑。
-- **教务返回 483**：教务系统对外不可达，改用 WebVPN 地址即可（本项目默认地址即 VPN）。
-- **抓取失败保留旧数据**：`run.sh` 只在成功时上传，线上数据不会因单次失败被清掉。
-- 想立即刷新：`bash run.sh` 手动执行一次。
-
-历史备注：曾尝试 GitHub Actions（美国 IP）与 Cloudflare 定时构建作为执行引擎，均被 WebVPN 403 拦截，  
-故当前只用境内服务器驱动；代码仓库中保留了完整的 VPN CAS/SSO 实现供复用。
+详见 `README.rust.md` 与 `build-binary.yml` 工作流。
