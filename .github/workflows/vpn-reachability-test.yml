@@ -1,0 +1,16 @@
+---
+name: VPN Reachability Test
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe school endpoints
+        run: |
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"
+          echo "== egress IP =="; curl -s --max-time 10 https://api.ipify.org; echo
+          echo -n "www.neuq.edu.cn: "; curl -s -o /dev/null -w "%{http_code}\n" --max-time 15 https://www.neuq.edu.cn
+          echo -n "vpn.no-UA: "; curl -s -o /dev/null -w "%{http_code}\n" --max-time 15 https://vpn.neuq.edu.cn/
+          echo -n "vpn.with-UA: "; curl -s -o /dev/null -w "%{http_code}\n" --max-time 15 -A "$UA" https://vpn.neuq.edu.cn/
+          echo -n "jwxt.direct: "; curl -s -o /dev/null -w "%{http_code}\n" --max-time 15 https://jwxt.neuq.edu.cn
