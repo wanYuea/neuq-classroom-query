@@ -40,9 +40,24 @@ jobs:
           NEUQ_VPN_BASE_URL: 'https://vpn.neuq.edu.cn'
           NEUQ_VPN_AUTH_METHOD: 'cas'
           TOTAL_DAYS: '7'
+          REQUEST_DELAY_MS: '2000'
+          MAX_RETRIES: '4'
           ASSETS_DIR: './assets'
           OUTPUT_DIR: './output'
-        run: ./ncq deploy
+        shell: bash {0}
+        run: |
+          for i in 1 2 3; do
+            echo "=== 抓取尝试 $i/3 ==="
+            if ./ncq deploy; then
+              echo "✔ 抓取成功（第 $i 次尝试）"
+              exit 0
+            fi
+            if [ "$i" = "3" ]; then
+              echo "✖ 三次尝试均失败"; exit 1
+            fi
+            echo "失败，${i} 分钟后重试..."
+            sleep $((i * 60))
+          done
 
       - name: Assemble public/
         run: |
