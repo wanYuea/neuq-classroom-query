@@ -55,3 +55,22 @@ jobs:
           gh release upload prebuilt-linux-x64 neuq-classroom-query-linux-x86_64.gz --clobber
           echo "原始：https://github.com/${GITHUB_REPOSITORY}/releases/download/prebuilt-linux-x64/neuq-classroom-query-linux-x86_64"
           echo "压缩包(推荐境内下载，约1/3体积)：https://github.com/${GITHUB_REPOSITORY}/releases/download/prebuilt-linux-x64/neuq-classroom-query-linux-x86_64.gz"
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build (Windows x86_64，禁用 jemalloc)
+        run: cargo build --profile ci --no-default-features
+
+      - name: Package
+        run: Compress-Archive -Path target/ci/neuq-classroom-query.exe -DestinationPath neuq-classroom-query-windows-x86_64.zip
+
+      - name: Upload to Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload prebuilt-linux-x64 neuq-classroom-query-windows-x86_64.zip --clobber
+          echo "Windows 版：https://github.com/${Env:GITHUB_REPOSITORY}/releases/download/prebuilt-linux-x64/neuq-classroom-query-windows-x86_64.zip"
