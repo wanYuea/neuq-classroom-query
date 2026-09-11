@@ -5,6 +5,11 @@ on:
   schedule:
     - cron: '20 * * * *'
   workflow_dispatch:
+    inputs:
+      retry_count:
+        description: '内部重试计数（自动填，请勿手动修改）'
+        required: false
+        default: '0'
 
 concurrency:
   group: refresh-publish
@@ -24,6 +29,7 @@ jobs:
             "https://github.com/${{ github.repository }}/releases/download/prebuilt-linux-x64/neuq-classroom-query-linux-x86_64-al8.gz"
           gunzip -c ncq.gz > ncq && chmod +x ncq
           ldd ./ncq | grep -i "not found" && { echo "缺依赖"; exit 1; } || echo "deps OK"
+          echo "本机出口 IP: $(curl -s --max-time 10 https://api.ipify.org || echo unknown)"
 
       - name: Fetch via WebVPN CAS + generate
         id: fetch
@@ -41,14 +47,14 @@ jobs:
           OUTPUT_DIR: './output'
         shell: bash {0}
         run: |
-          for i in 1 2 3; do
-            echo "=== 抓取尝试 $i/3 ==="
+          for i in 1 2 3 4; do
+            echo "=== 抓取尝试 $i/4 ==="
             if ./ncq deploy; then
               echo "✔ 抓取成功（第 $i 次尝试）"
               exit 0
             fi
-            if [ "$i" = "3" ]; then
-              echo "✖ 三次尝试均失败"; exit 1
+            if [ "$i" = "4" ]; then
+              echo "✖ 四次尝试均失败（可能是出口 IP 被临时封锁）"; exit 1
             fi
             echo "失败，${i} 分钟后重试..."
             sleep $((i * 60))
@@ -87,3 +93,27 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy public --project-name=neuq-classroom-query --branch=main
+
+  # 抓取失败时（例如出口 IP 被学校 WebVPN 临时 403），自动换一个新 runner（=新 IP）补跑，
+  # 最多补 2 次，避免整小时数据停更。
+  retrigger:
+    needs: [fetch, deploy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: write
+    steps:
+      - name: Re-dispatch with new runner IP
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RC: ${{ inputs.retry_count || 0 }}
+        run: |
+          NEXT=$((RC + 1))
+          if [ "$NEXT" -gt 2 ]; then
+            echo "已补跑 2 次仍失败，放弃本轮，等待下一班定时任务。"
+            exit 0
+          fi
+          echo "第 $RC 次运行失败，等待 3 分钟冷却后换新 runner 补跑（第 $NEXT 次）..."
+          sleep 180
+          gh workflow run refresh.yml --repo "${{ github.repository }}" --ref main -f retry_count="$NEXT"
+          echo "已触发补跑 #$NEXT"
