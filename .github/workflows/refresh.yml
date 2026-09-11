@@ -98,6 +98,7 @@ jobs:
   # 最多补 2 次，避免整小时数据停更。
   retrigger:
     needs: [fetch, deploy]
+    if: ${{ failure() }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
