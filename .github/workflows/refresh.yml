@@ -26,7 +26,7 @@ jobs:
       - name: Download prebuilt binary
         run: |
           curl -sSL --retry 3 -o ncq.gz \
-            "https://github.com/${{ github.repository }}/releases/download/prebuilt-linux-x64/neuq-classroom-query-linux-x86_64-al8.gz"
+            "https://github.com/${{ github.repository }}/releases/download/prebuilt-linux-x64/neuq-classroom-query-linux-x86_64.gz"
           gunzip -c ncq.gz > ncq && chmod +x ncq
           ldd ./ncq | grep -i "not found" && { echo "缺依赖"; exit 1; } || echo "deps OK"
           echo "本机出口 IP: $(curl -s --max-time 10 https://api.ipify.org || echo unknown)"
