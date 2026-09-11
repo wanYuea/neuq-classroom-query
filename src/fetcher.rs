@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use tokio::fs;
-use tokio::sync::Semaphore;
 
 use crate::client::HttpClient;
 use crate::config::{AppConfig, TIME_SLOTS};
@@ -21,87 +20,97 @@ impl Fetcher {
     }
 
     /// 执行完整的数据抓取流程
-    /// 每天使用独立客户端（独立 session），7 天并行抓取
+    ///
+    /// 注意：教务系统/WebVPN 对同一账号有单会话限制——并发登录多个 session
+    /// 会互相踢下线，最终只剩随机一个会话有效（其余天的所有查询都拿不到
+    /// 结果表格）。因此这里只创建一个客户端、登录一次，按天串行抓取。
+    /// 若某天结束后仍有时段无数据（疑似会话中途失效），重新登录后补抓该天一次。
     pub async fn fetch_all(&self) -> Result<()> {
         tracing::info!("--- 数据抓取开始 ---");
 
-        // 为每天创建独立客户端并并行抓取；
-        // 全局并发闸限制同时进行的空闲教室查询数，避免对教务系统造成瞬时压力
-        let gate = Arc::new(Semaphore::new(2));
-        let mut handles = Vec::new();
+        let client = HttpClient::new(Arc::clone(&self.config))?;
+        self.ensure_login(&client).await?;
+
+        let mut errors: Vec<String> = Vec::new();
 
         for day_offset in 0..self.config.total_days {
-            let config = Arc::clone(&self.config);
-            let gate = Arc::clone(&gate);
-
-            let handle = tokio::spawn(async move {
-                // 每个任务创建独立的客户端（独立 session）
-                let client = HttpClient::new(Arc::clone(&config))?;
-
-                // 校外场景：先登录 WebVPN 门户，否则重写地址会被重定向到门户登录页
-                if config.vpn_enabled {
-                    with_retry(
-                        &config.retry_config,
-                        || async { client.login_portal().await },
-                        &format!("Day {} WebVPN 门户登录", day_offset),
-                    )
-                    .await?;
+            let mut missing = match fetch_day_data(client.clone(), Arc::clone(&self.config), day_offset).await {
+                Ok(n) => n,
+                Err(e) => {
+                    errors.push(format!("Day {}: {}", day_offset, e));
+                    continue;
                 }
+            };
 
-                // 独立登录教务系统（VPN+CAS 场景走统一认证 SSO，否则走传统账号密码登录）
-                with_retry(
-                    &config.retry_config,
-                    || async { client.login_eams().await },
-                    &format!("Day {} 教务登录", day_offset),
-                )
-                .await?;
+            // 有时段无数据：多为会话被踢/过期，重登录后补抓一次
+            if missing > 0 {
+                tracing::warn!(
+                    "Day {} 有 {} 个时段无数据，疑似会话失效，重新登录后补抓",
+                    day_offset, missing
+                );
+                match self.ensure_login(&client).await {
+                    Ok(()) => match fetch_day_data(client.clone(), Arc::clone(&self.config), day_offset).await {
+                        Ok(n) => missing = n,
+                        Err(e) => {
+                            errors.push(format!("Day {} 补抓: {}", day_offset, e));
+                            continue;
+                        }
+                    },
+                    Err(e) => {
+                        errors.push(format!("Day {} 重登录: {}", day_offset, e));
+                        continue;
+                    }
+                }
+            }
 
-                tracing::info!("Day {} 登录成功，开始抓取", day_offset);
-
-                // 串行抓取该天的所有时段（同一 session 内必须串行）
-                fetch_day_data(client, config, gate, day_offset).await
-            });
-
-            handles.push(handle);
-        }
-
-        // 等待所有天完成
-        let mut errors = Vec::new();
-        for handle in handles {
-            match handle.await {
-                Ok(Ok(())) => {}
-                Ok(Err(e)) => errors.push(e),
-                Err(e) => errors.push(crate::error::AppError::Other(format!("任务 panic: {}", e))),
+            if missing > 0 {
+                tracing::warn!("Day {} 补抓后仍有 {} 个时段无数据", day_offset, missing);
+            } else {
+                tracing::info!("Day {} 完成", day_offset);
             }
         }
 
         if !errors.is_empty() {
-            let error_msg = errors.iter().map(|e| e.to_string()).collect::<Vec<_>>().join("; ");
             return Err(crate::error::AppError::Fetch {
-                message: format!("部分数据抓取失败: {}", error_msg),
+                message: format!("部分数据抓取失败: {}", errors.join("; ")),
             });
         }
 
         tracing::info!("✔ 数据抓取完成");
         Ok(())
     }
+
+    /// 登录 WebVPN（如启用）与教务系统（同一客户端复用同一会话）
+    async fn ensure_login(&self, client: &HttpClient) -> Result<()> {
+        if self.config.vpn_enabled {
+            with_retry(
+                &self.config.retry_config,
+                || async { client.login_portal().await },
+                "WebVPN 门户登录",
+            )
+            .await?;
+        }
+
+        with_retry(
+            &self.config.retry_config,
+            || async { client.login_eams().await },
+            "教务登录",
+        )
+        .await?;
+
+        tracing::info!("登录成功，会话就绪");
+        Ok(())
+    }
 }
 
 /// 抓取单个时段并保存结果，返回是否获取到数据
 async fn fetch_and_save_slot(
-    gate: &Semaphore,
     client: &HttpClient,
     day_offset: u8,
     date_str: &str,
     slot: &crate::config::TimeSlot,
     output_dir: &std::path::Path,
 ) -> Result<bool> {
-    // 限制并发查询数，缓解“请不要过快点击”类风控与瞬时 500
-    let _permit = gate
-        .acquire()
-        .await
-        .map_err(|_| crate::error::AppError::Other("并发闸关闭".to_string()))?;
-
     let classrooms = client
         .search_free_classrooms(date_str, slot.begin, slot.end)
         .await?;
@@ -129,13 +138,12 @@ async fn fetch_and_save_slot(
 ///
 /// 首轮串行抓取所有时段，若某时段返回空结果（WARN），将其加入重试队列。
 /// 首轮结束后，对队列中的时段逐一重试（最多 MAX_EMPTY_RETRIES 次）。
-/// 若重试仍失败，记录最终 WARN。
+/// 返回最终仍无数据的时段数（0 = 该天数据完整）。
 async fn fetch_day_data(
     client: HttpClient,
     config: Arc<AppConfig>,
-    gate: Arc<Semaphore>,
     day_offset: u8,
-) -> Result<()> {
+) -> Result<usize> {
     let date_str = get_beijing_date_string(day_offset as i64);
 
     let output_dir = config.output_dir.join(format!("output-day-{}", day_offset));
@@ -149,7 +157,7 @@ async fn fetch_day_data(
 
         match with_retry(
             &config.retry_config,
-            || async { fetch_and_save_slot(&gate, &client, day_offset, &date_str, slot, &output_dir).await },
+            || async { fetch_and_save_slot(&client, day_offset, &date_str, slot, &output_dir).await },
             &format!("Day {} 时段 {}-{}", day_offset, slot.begin, slot.end),
         )
         .await
@@ -181,7 +189,7 @@ async fn fetch_day_data(
 
             match with_retry(
                 &config.retry_config,
-                || async { fetch_and_save_slot(&gate, &client, day_offset, &date_str, slot, &output_dir).await },
+                || async { fetch_and_save_slot(&client, day_offset, &date_str, slot, &output_dir).await },
                 &format!("Day {} 时段 {}-{} (重试{})", day_offset, slot.begin, slot.end, attempt),
             )
             .await
@@ -200,7 +208,10 @@ async fn fetch_day_data(
     }
 
     // 记录最终失败的时段
-    if !failed_slots.is_empty() {
+    let missing = failed_slots.len();
+    if failed_slots.is_empty() {
+        tracing::info!("Day {} 完成", day_offset);
+    } else {
         let names: Vec<&str> = failed_slots.iter().map(|s| s.file_suffix).collect();
         tracing::warn!(
             "Day {} 以下时段经 {} 次重试仍无数据: {}",
@@ -210,8 +221,7 @@ async fn fetch_day_data(
         );
     }
 
-    tracing::info!("Day {} 完成", day_offset);
-    Ok(())
+    Ok(missing)
 }
 
 /// 获取指定偏移量的北京日期字符串
